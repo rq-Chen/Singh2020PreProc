@@ -6,7 +6,7 @@ function[]=MyStartServerDT(Subjects, nGSR, Atlas, out_dir, in_dir)
 %   - Subjects: subject IDs (e.g., 100307), numerical array or cell of char
 %   - nGSR: level of (Siegel et. al., 2017) preprocessing. Set as 3 for (Singh
 %   et. al., 2020) pipeline.
-%   - Atlas: 'y' for Yeo17 (Schaefer) atlas, otherwise Gordon333
+%   - Atlas: 'y' for Yeo17 (Schaefer) atlas, otherwise Gordon333 (not implemented yet)
 %   - out_dir: Output directory
 %   - in_dir: HCP directory, with subdirectories named after subject IDs.
 %
@@ -83,6 +83,14 @@ function[]=MyStartServerDT(Subjects, nGSR, Atlas, out_dir, in_dir)
 %and QC which contains masking, frame and run exclusion, FD and DVAR info.
 %as well as the individual run FC
 
+
+%% Constants %%
+
+fieldtrip_dir = fullfile(fileparts(mfilename('fullpath')), '..', 'utilities', 'fieldtrip')
+
+
+%% Inputs %%
+
 if ~iscell(Subjects)
     Subjects=num2cell(Subjects);
 end
@@ -137,11 +145,11 @@ BbName='rfMRI_REST';
 
 % addpath('/scratch2/Singh/HCP')
 addpath(fullfile(script_dir, 'utilities', 'FSLNets'))          % for function nets_netmats
-addpath(fullfile(script_dir, 'utilities', 'fieldtrip'))
-addpath(fullfile(script_dir, 'utilities', 'fieldtrip', 'utilities'))
-addpath(fullfile(script_dir, 'utilities', 'fieldtrip', 'external', 'freesurfer'))
-addpath(fullfile(script_dir, 'utilities', 'fieldtrip', 'fileio', 'special')) % (some fieldtrip stuff used by Siegel..not mentioned, though)
-addpath(fullfile(script_dir, 'utilities', 'fieldtrip', 'fileio'))
+addpath(fullfile(fieldtrip_dir))
+addpath(fullfile(fieldtrip_dir, 'utilities'))
+addpath(fullfile(fieldtrip_dir, 'external', 'freesurfer'))
+addpath(fullfile(fieldtrip_dir, 'fileio', 'special')) % (some fieldtrip stuff used by Siegel..not mentioned, though)
+addpath(fullfile(fieldtrip_dir, 'fileio'))
 % addpath('/scratch1')
 
 
@@ -203,13 +211,13 @@ end
 %Parc.dir=strcat(ParDir,'gordon\gordon_parcels\Parcels\Parcels_LR.dlabel.nii');
 
 
-Parc.dir = fullfile(script_dir, 'utilities', 'Parcels_LR.dlabel.nii');%where is the parcellation located
-Parc.NP = 333; % number of parcels in Gordon parcellation, change accordingly for other parcellations
-Parc.name = 'Gordon333'; %what should we call the output of the ptseries .mats
-Parc.ordered = 0; % is the parcel ordered on a community level
-%Parc.key=strcat(ParcDir,'gordon\gordon_parcels\Parcels\Gordon333Parcelskey.csv');
-%Parc.key = '/data/nil-bluearc/ccp-hcp/DMCC_ALL_BACKUPS/ATLASES/gordon/gordon_parcels/Parcels/Gordon333ParcelsKey.csv'%path to the key of how the parcels should be reordered
-Parc.key = fullfile(script_dir, 'utilities', 'Gordon333SRI_ParcelsKey.csv'); %#ok<STRNU>
+% Parc.dir = fullfile(script_dir, 'utilities', 'Parcels_LR.dlabel.nii');%where is the parcellation located
+% Parc.NP = 333; % number of parcels in Gordon parcellation, change accordingly for other parcellations
+% Parc.name = 'Gordon333'; %what should we call the output of the ptseries .mats
+% Parc.ordered = 0; % is the parcel ordered on a community level
+% %Parc.key=strcat(ParcDir,'gordon\gordon_parcels\Parcels\Gordon333Parcelskey.csv');
+% %Parc.key = '/data/nil-bluearc/ccp-hcp/DMCC_ALL_BACKUPS/ATLASES/gordon/gordon_parcels/Parcels/Gordon333ParcelsKey.csv'%path to the key of how the parcels should be reordered
+% Parc.key = fullfile(script_dir, 'utilities', 'Gordon333SRI_ParcelsKey.csv'); %#ok<STRNU>
 
 %Parc.dir = '/data/nil-bluearc/corbetta/PP_SCRIPTS/Parcellation/GLParcels/reordered/GLParcels_324_reordered.32k.dlabel.nii'
 %Parc.NP = 324

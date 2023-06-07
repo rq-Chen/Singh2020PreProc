@@ -4,7 +4,7 @@ Author: Matthew Singh.
 
 Modified by Ruiqi Chen (2023).
 
-`SuperMessy/` contains all codes. We tried to built the dependency tree and move each package into specific folder. We put all dependencies into the `SuperMessy/utilities` directory.
+`SuperMessy/` contains all codes. We tried to built the dependency tree and move each package into specific folder. We put all dependencies into the `SuperMessy/utilities` directory. Note that you also need to download `fieldtrip` and put the fieldtrip folder into `SuperMessy/utilities`.
 
 Current availabel HCP data on the WUSTL NIL cluster:
 
