@@ -1,0 +1,172 @@
+#!/bin/bash
+#
+# Script: DVARS.sh
+# Purpose: Create standardized version of DVARS
+# Author: T. Nichols
+# Version: http://github.com/nicholst/DVARS/tree/$Format:%h$
+#          $Format:%ci$
+#
+
+
+###############################################################################
+#
+# Environment set up
+#
+###############################################################################
+
+shopt -s nullglob # No-match globbing expands to null
+TmpDir=/tmp
+Tmp=$TmpDir/`basename $0`-${$}-
+trap CleanUp INT
+
+###############################################################################
+#
+# Functions
+#
+###############################################################################
+
+Usage() {
+cat <<EOF
+Usage: `basename $0` [options] fMRI_4Dtimeseries DVARSout
+       `basename $0` [options] fMRI_1 fMRI_2 ... fMRI_T DVARSout
+Options
+    -all Produce 2 additional versions of DVARS.
+Creates standardized version of DVARS, normalizing according to the expected 
+value of DVARS under an AR1 model. DVARSout, consists of plain text file with
+this normalized version of DVARS, scaled so that it is approximately 1 if  
+there are no artifacts. 
+With the -all option, 2 additional columns are added to DVARSout.  The 2nd column
+is the raw DVARS with no scaling (precisely the root mean square (RMS) of the temporal 
+difference).  The 3rd is the precision-normalized DVARS:  Before taking the RMS, 
+temporal difference images are standardized voxel-wise giving a more precisely
+normalized DVARS measure.  A side effect, however, is that high-variance parts of 
+the image are down-weighted relative to low-variance areas.
+_________________________________________________________________________
+\$Id$
+EOF
+exit
+}
+
+CleanUp () {
+    /bin/rm -f ${Tmp}*
+    exit 0
+}
+
+
+###############################################################################
+#
+# Parse arguments
+#
+###############################################################################
+
+while (( $# > 1 )) ; do
+    case "$1" in
+        "-help")
+            Usage
+            ;;
+        "-all")
+            shift
+            AllVers="$1"
+            ;;
+        -*)
+            echo "ERROR: Unknown option '$1'"
+            exit 1
+            break
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+Tmp=$TmpDir/DVARS-${$}-
+
+if (( $# < 2 )) ; then
+    Usage
+elif (( $# == 2 )) ; then
+    FUNC="$1"
+    OUT="$2"
+else
+    ((i=0))
+    Imgs=()
+    while (( $# >= 2 )) ; do
+	Imgs[i]="$1"
+	((i++))
+	shift
+    done
+    FUNC=$Tmp-1
+    fsl5.0-fslmerge -t $FUNC "${Imgs[@]}"
+    OUT="$1"
+fi
+
+
+###############################################################################
+#
+# Script Body
+#
+###############################################################################
+
+echo -n "."
+echo -e "Finding mean over time"
+
+# Find mean over time
+fsl5.0-fslmaths "$FUNC" -Tmean $Tmp-Mean
+# Find the brain
+fsl5.0-bet $Tmp-Mean  $Tmp-MeanBrain
+
+echo -e "Computing estimate of standard deviation"
+# Compute robust estimate of standard deviation
+fsl5.0-fslmaths "$FUNC" -Tperc 25 $Tmp-lq
+fsl5.0-fslmaths "$FUNC" -Tperc 75 $Tmp-uq
+fsl5.0-fslmaths $Tmp-uq -sub $Tmp-lq -div 1.349 $Tmp-SD -odt float
+
+echo -e "Computing (non-robust) estimate of lag-1 autocorrelation"
+# Compute (non-robust) estimate of lag-1 autocorrelation
+fsl5.0-fslmaths "$FUNC" -sub $Tmp-Mean -Tar1 $Tmp-AR1 -odt float
+
+echo -e "Computing (predicted) deviation of temporal difference time series"
+# Compute (predicted) standard deviation of temporal difference time series
+fsl5.0-fslmaths $Tmp-AR1 -mul -1 -add 1 -mul 2 -sqrt -mul $Tmp-SD  $Tmp-DiffSDhat
+
+# Save mean value
+DiffSDmean=$(fsl5.0-fslstats $Tmp-DiffSDhat -k $Tmp-MeanBrain -M)
+
+echo -n "."
+echo -e "Computing temporal difference of squared time series"
+
+# Compute temporal difference squared time series
+nVol=$(fsl5.0-fslnvols "$FUNC")
+fsl5.0-fslroi "$FUNC" $Tmp-FUNC0 0 $((nVol-1))
+fsl5.0-fslroi "$FUNC" $Tmp-FUNC1 1 $nVol
+fsl5.0-fslmaths $Tmp-FUNC0 -sub $Tmp-FUNC1 -sqr $Tmp-DiffSq -odt float
+
+echo -n "."
+echo -e "Computing non-standardized DVARS"
+
+# Compute DVARS, no standization
+fsl5.0-fslstats -t $Tmp-DiffSq -k $Tmp-MeanBrain -M > $Tmp-DiffVar.dat
+
+if [ "$AllVers" = "" ] ; then
+    # Standardized
+    awk '{printf("%g\n",sqrt($1)/'"$DiffSDmean"')}' $Tmp-DiffVar.dat > "$OUT"
+else
+    # Compute DVARS, based on voxel-wise standardized image
+    fsl5.0-fslmaths $Tmp-FUNC0 -sub $Tmp-FUNC1 -div $Tmp-DiffSDhat -sqr $Tmp-DiffSqVxStdz
+    fsl5.0-fslstats -t $Tmp-DiffSqVxStdz -k $Tmp-MeanBrain -M | awk '{print sqrt($1)}' > $Tmp-DiffVxStdzSD.dat
+
+    # Sew it all together
+    awk '{printf("%g\t%g\n",sqrt($1)/'"$DiffSDmean"',sqrt($1))}' $Tmp-DiffVar.dat > $Tmp-DVARS
+    paste $Tmp-DVARS $Tmp-DiffVxStdzSD.dat > "$OUT"
+fi
+
+echo -n "."
+
+echo "."
+
+###############################################################################
+#
+# Exit & Clean up
+#
+###############################################################################
+
+CleanUp
+

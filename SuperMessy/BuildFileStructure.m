@@ -1,6 +1,6 @@
 %build the File Structure to store the result data.
 %This should make a results folder in the out_dir for each subject and a folder
-%for each tseries. this should also make a 'output' folder in the out_dir
+%for each tseries. this should also make an 'outputs' folder in the out_dir
 %where the .mat data will be stored
 %may need to be edited if we decide to store the results with the preproccessed data this. 
 

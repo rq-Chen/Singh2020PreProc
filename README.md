@@ -4,7 +4,17 @@ Author: Matthew Singh.
 
 Modified by Ruiqi Chen (2023).
 
-`SuperMessy/` contains all codes. We tried to built the dependency tree and move each package into specific folder.
+`SuperMessy/` contains all codes. We tried to built the dependency tree and move each package into specific folder. We put all dependencies into the `SuperMessy/utilities` directory.
+
+Current availabel HCP data on the WUSTL NIL cluster:
+
+```bash
+/net/10.20.145.164/HCPpackages02/unzip/1200subject
+/net/10.20.145.162/HCPpackages03/unzip/1200subject
+/net/10.20.145.162/HCPpackages04/unzip/1200subject
+```
+
+There should be six packages, each with 185-186 subjects. But currently only three are available (as for 2023/06/06).
 
 ## For Resting State Only (Singh et. al., 2020)
 

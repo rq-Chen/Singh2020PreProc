@@ -18,3 +18,10 @@ end
 cd(tCD);
 end
 
+function [filenames] = GetFileNames(Inpath)
+    %UNTITLED2 Summary of this function goes here
+    %   Detailed explanation goes here
+    list=dir(Inpath);  %get info of files/folders in current directory
+    filenames={list(~[list.isdir]).name}; %Get only files, not folders
+end
+
