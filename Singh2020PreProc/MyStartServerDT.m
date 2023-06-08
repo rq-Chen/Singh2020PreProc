@@ -86,7 +86,7 @@ function[]=MyStartServerDT(Subjects, nGSR, Atlas, out_dir, in_dir)
 
 %% Constants %%
 
-fieldtrip_dir = fullfile(fileparts(mfilename('fullpath')), '..', 'utilities', 'fieldtrip')
+fieldtrip_dir = fullfile(fileparts(mfilename('fullpath')), 'utilities', 'fieldtrip')
 
 
 %% Inputs %%
@@ -102,7 +102,7 @@ end
 
 script_dir = fileparts(mfilename('fullpath'));
 if nargin < 5
-    in_dir = '/net/10.20.145.164/HCPpackages02/unzip/1200subject';
+    in_dir = '/net/10.20.145.162/HCPpackages03/unzip/1200subject';
     fprintf('\n\nNo input directory provided. Default to %s\n\n', in_dir);
 end
 if nargin < 4

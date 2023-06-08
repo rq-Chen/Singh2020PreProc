@@ -100,7 +100,7 @@ seCSF = strel('disk',1,0)
                 %R_TC = R_TC./repmat(ptstd,1,size(R_TC,2));
                 
                 %% PCA
-                [coeff, score, latent] = pca(R_TC,'econ');
+                [coeff, score, latent] = pca(R_TC, 'Economy', true);
                 regs = [regs coeff(:,1:5)];
             end
             %pve=cumsum(latent)./sum(latent);

@@ -4,7 +4,7 @@ function [] = MyAllYeoParcellate(Subs,GSR,bDir,type,doMSM,varargin)
 doInterp='y';
 YeoSize={'01','02','04','06','08','10'};
 % Corttype='Av';Subtype='Av';Stemtype='Av';Ceretype='Av';
-bEnd='/Out/outputs/';
+bEnd = fullfile('Out', 'outputs');
 
 if isempty(varargin)
     Ending='_scrub20_frames400_AveRun1_fix1_pearsonFC_runs_dtseries.mat';
@@ -25,13 +25,13 @@ end
 for iSub=1:numel(Subs)
     disp(iSub)
     % load(strcat(bDir,bEnd,'sub',num2str(Subs(iSub)),Mid,num2str(GSR),Ending),'myQC','QC','Subjlist','switches','excluded','dt');
-    load(strcat(bDir,bEnd,'sub',num2str(Subs(iSub)),Mid,num2str(GSR),Ending),'myQC','dt');
+    load(fullfile(bDir, bEnd, strcat('sub',num2str(Subs(iSub)),Mid,num2str(GSR),Ending)),'myQC','dt');
     for iY=1:numel(YeoSize)
         ParcName=strcat('Y',YeoSize{iY});
         cc=cell(1,4);
         QC=myQC;
         for j=1:numel(dt)
-            dt{j}=zscore(dt{j}')'; %#ok<AGROW>
+            dt{j}=zscore(dt{j}')';
             Qmod=QC;
             %        dt{j}=zscore(dt{j}')'; %#ok<AGROW> %% Already normalize elsewhere
             Qmod.run=Qmod.run(j);
@@ -41,14 +41,15 @@ for iSub=1:numel(Subs)
             %ParcInfo.NP=360;
 
             script_dir = fileparts(mfilename('fullpath'));
-            mDir = fullfile(script_dir, 'ATLASES', 'Yeo');
-            G=load(strcat(mDir,'GordonWsub.mat')); %% Doesn't matter that using gordon here--only for the subcorticals anyway
-            load(strcat(mDir,'cortInd.mat'),'cortInd');
+            mDir = fullfile(script_dir, 'utilities', 'ATLASES', 'Yeo');
+            
+            G=load(fullfile(mDir,'GordonWsub.mat')); %% Doesn't matter that using gordon here--only for the subcorticals anyway
+            load(fullfile(mDir,'cortInd.mat'),'cortInd');
             G=G.G;
             G(G>0)=G(G>0)+(ParcInfo.NP-333);
-            % ParcInfo.key=strcat(mDir,'Fixed Atlas/MMP360_ParcelsKey.csv');
-            gCort=importdata(strcat(mDir,nYeo,'.txt'));
-            SubCifti=importdata(strcat(mDir,'HCP_subcortical/Subcortnew.txt'));
+            % ParcInfo.key=fullfile(mDir,'Fixed Atlas/MMP360_ParcelsKey.csv');
+            gCort=importdata(fullfile(mDir, strcat(nYeo,'.txt')));
+            SubCifti=importdata(fullfile(mDir,'HCP_subcortical', 'Subcortnew.txt'));
 
             gCort=gCort(cortInd);
             Combo=[gCort;MatchSub(G,SubCifti,ParcInfo)];
@@ -77,9 +78,9 @@ for iSub=1:numel(Subs)
             X.Misc='SuperClean';
         end
         if ~isempty(type)
-            save(strcat(bDir,'/sub',num2str(Subs(iSub)),ParcName,type,NameEnd,'.mat'),'X');
+            save(fullfile(bDir, strcat('sub',num2str(Subs(iSub)),ParcName,type,NameEnd,'.mat')),'X');
         else
-            save(strcat(bDir,'/sub',num2str(Subs(iSub)),ParcName,NameEnd,'.mat'),'X');
+            save(fullfile(bDir, strcat('sub',num2str(Subs(iSub)),ParcName,NameEnd,'.mat')),'X');
         end
 
     end

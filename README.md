@@ -4,7 +4,7 @@ Author: Matthew Singh.
 
 Modified by Ruiqi Chen (2023).
 
-`SuperMessy/` contains all codes. We tried to built the dependency tree and move each package into specific folder. We put all dependencies into the `SuperMessy/utilities` directory. Note that you also need to download `fieldtrip` and put the fieldtrip folder into `SuperMessy/utilities`.
+`SuperMessy/` contains all codes. We tried to built the dependency tree and move each package into specific folder. We put all dependencies into the `[PackageName]/utilities` directory. Apart from those, you also need to download `fieldtrip` and specify the fieldtrip directory at the beginning of `MyStartServerDT.m`. You also need `FSL` if DVARS files are not available.
 
 Current availabel HCP data on the WUSTL NIL cluster:
 

@@ -94,7 +94,7 @@ else
 	shift
     done
     FUNC=$Tmp-1
-    fsl5.0-fslmerge -t $FUNC "${Imgs[@]}"
+    fslmerge -t $FUNC "${Imgs[@]}"
     OUT="$1"
 fi
 
@@ -109,49 +109,49 @@ echo -n "."
 echo -e "Finding mean over time"
 
 # Find mean over time
-fsl5.0-fslmaths "$FUNC" -Tmean $Tmp-Mean
+fslmaths "$FUNC" -Tmean $Tmp-Mean
 # Find the brain
-fsl5.0-bet $Tmp-Mean  $Tmp-MeanBrain
+bet $Tmp-Mean  $Tmp-MeanBrain
 
 echo -e "Computing estimate of standard deviation"
 # Compute robust estimate of standard deviation
-fsl5.0-fslmaths "$FUNC" -Tperc 25 $Tmp-lq
-fsl5.0-fslmaths "$FUNC" -Tperc 75 $Tmp-uq
-fsl5.0-fslmaths $Tmp-uq -sub $Tmp-lq -div 1.349 $Tmp-SD -odt float
+fslmaths "$FUNC" -Tperc 25 $Tmp-lq
+fslmaths "$FUNC" -Tperc 75 $Tmp-uq
+fslmaths $Tmp-uq -sub $Tmp-lq -div 1.349 $Tmp-SD -odt float
 
 echo -e "Computing (non-robust) estimate of lag-1 autocorrelation"
 # Compute (non-robust) estimate of lag-1 autocorrelation
-fsl5.0-fslmaths "$FUNC" -sub $Tmp-Mean -Tar1 $Tmp-AR1 -odt float
+fslmaths "$FUNC" -sub $Tmp-Mean -Tar1 $Tmp-AR1 -odt float
 
 echo -e "Computing (predicted) deviation of temporal difference time series"
 # Compute (predicted) standard deviation of temporal difference time series
-fsl5.0-fslmaths $Tmp-AR1 -mul -1 -add 1 -mul 2 -sqrt -mul $Tmp-SD  $Tmp-DiffSDhat
+fslmaths $Tmp-AR1 -mul -1 -add 1 -mul 2 -sqrt -mul $Tmp-SD  $Tmp-DiffSDhat
 
 # Save mean value
-DiffSDmean=$(fsl5.0-fslstats $Tmp-DiffSDhat -k $Tmp-MeanBrain -M)
+DiffSDmean=$(fslstats $Tmp-DiffSDhat -k $Tmp-MeanBrain -M)
 
 echo -n "."
 echo -e "Computing temporal difference of squared time series"
 
 # Compute temporal difference squared time series
-nVol=$(fsl5.0-fslnvols "$FUNC")
-fsl5.0-fslroi "$FUNC" $Tmp-FUNC0 0 $((nVol-1))
-fsl5.0-fslroi "$FUNC" $Tmp-FUNC1 1 $nVol
-fsl5.0-fslmaths $Tmp-FUNC0 -sub $Tmp-FUNC1 -sqr $Tmp-DiffSq -odt float
+nVol=$(fslnvols "$FUNC")
+fslroi "$FUNC" $Tmp-FUNC0 0 $((nVol-1))
+fslroi "$FUNC" $Tmp-FUNC1 1 $nVol
+fslmaths $Tmp-FUNC0 -sub $Tmp-FUNC1 -sqr $Tmp-DiffSq -odt float
 
 echo -n "."
 echo -e "Computing non-standardized DVARS"
 
 # Compute DVARS, no standization
-fsl5.0-fslstats -t $Tmp-DiffSq -k $Tmp-MeanBrain -M > $Tmp-DiffVar.dat
+fslstats -t $Tmp-DiffSq -k $Tmp-MeanBrain -M > $Tmp-DiffVar.dat
 
 if [ "$AllVers" = "" ] ; then
     # Standardized
     awk '{printf("%g\n",sqrt($1)/'"$DiffSDmean"')}' $Tmp-DiffVar.dat > "$OUT"
 else
     # Compute DVARS, based on voxel-wise standardized image
-    fsl5.0-fslmaths $Tmp-FUNC0 -sub $Tmp-FUNC1 -div $Tmp-DiffSDhat -sqr $Tmp-DiffSqVxStdz
-    fsl5.0-fslstats -t $Tmp-DiffSqVxStdz -k $Tmp-MeanBrain -M | awk '{print sqrt($1)}' > $Tmp-DiffVxStdzSD.dat
+    fslmaths $Tmp-FUNC0 -sub $Tmp-FUNC1 -div $Tmp-DiffSDhat -sqr $Tmp-DiffSqVxStdz
+    fslstats -t $Tmp-DiffSqVxStdz -k $Tmp-MeanBrain -M | awk '{print sqrt($1)}' > $Tmp-DiffVxStdzSD.dat
 
     # Sew it all together
     awk '{printf("%g\t%g\n",sqrt($1)/'"$DiffSDmean"',sqrt($1))}' $Tmp-DiffVar.dat > $Tmp-DVARS
