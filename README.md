@@ -4,9 +4,17 @@ Author: Matthew Singh.
 
 Modified by Ruiqi Chen (2023).
 
-`SuperMessy/` contains all codes. We tried to built the dependency tree and move each package into specific folder. We put all dependencies into the `[PackageName]/utilities` directory. Apart from those, you also need to download `fieldtrip` and specify the fieldtrip directory at the beginning of `MyStartServerDT.m`. You also need `FSL` if DVARS files are not available.
+`SuperMessy/` contains all codes. We tried to built the dependency tree and move each package into specific folder. We put all dependencies into the `[PackageName]/utilities` directory, including:
 
-Current availabel HCP data on the WUSTL NIL cluster:
+- The external package `DVARS`.
+- The external package `FSLNets`.
+- Some atlas files.
+
+Apart from those, you also need to download `fieldtrip` and specify the fieldtrip directory at the beginning of `MyStartServerDT.m`.
+
+~~You also need `FSL` if DVARS files are not available.~~ (maybe not needed with DVARS package)
+
+Current available HCP data on the WUSTL NIL cluster:
 
 ```bash
 /net/10.20.145.164/HCPpackages02/unzip/1200subject
