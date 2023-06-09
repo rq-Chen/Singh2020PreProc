@@ -14,11 +14,10 @@ function[]=MyStartServerDT(Subjects, nGSR, Atlas, out_dir, in_dir)
 %   - MATLAB files `sub[SubjID]Y[nParcels/100].mat`: e.g., `sub100206Y01.mat`,
 %       `sub149741Y10.mat`. These are the inputs to MINDy functions (parcel-level
 %       timeseries `X.Dat` along with quality control (QC) measures `X.QC`).
-%   - Subdirectory `Out/`: preprocessed dense timeseries for each subject
-%     - Subdirecoty `outputs/`: functional connectivity for each subject
-%       - one long-named .mat file for each subject
+%   - Subdirectory `Out/`:
+%     - Subdirecoty `outputs/`: dense timeseries for each subject
+%       - one long-named .mat file (size ~2G) for each subject
 %     - Subdirectories `[SubjID]/`: e.g., `100307/`
-%       - `RestOut.mat`: resting state timeseries
 %       - Subdirectory `Results/`:
 %         - Subdirectories for each run: e.g., `rfMRI_REST1_LR/`:
 %           - DVARS file

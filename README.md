@@ -2,7 +2,7 @@
 
 Author: Matthew Singh.
 
-Modified by Ruiqi Chen (2023).
+Modified and documented by Ruiqi Chen (2023).
 
 `SuperMessy/` contains all codes. We tried to built the dependency tree and move each package into specific folder. We put all dependencies into the `[PackageName]/utilities` directory, including:
 
@@ -12,7 +12,7 @@ Modified by Ruiqi Chen (2023).
 
 Apart from those, you also need to download `fieldtrip` and specify the fieldtrip directory at the beginning of `MyStartServerDT.m`.
 
-~~You also need `FSL` if DVARS files are not available.~~ (maybe not needed with DVARS package)
+~~You also need `FSL` if DVARS files are not available.~~ (no longer needed with DVARS package)
 
 Current available HCP data on the WUSTL NIL cluster:
 
@@ -23,6 +23,14 @@ Current available HCP data on the WUSTL NIL cluster:
 ```
 
 There should be six packages, each with 185-186 subjects. But currently only three are available (as for 2023/06/06).
+
+## Notes on DVARS
+
+The original (Singh et. al., 2020) paper uses FSL and a bash script (`[PackageName]/utilities/dvars_nichols.sh`) from Dr. Thomas Nichols to compute "standardized DVARS". Seems like this script came from [here](https://warwick.ac.uk/fac/sci/statistics/staff/academic-research/nichols/scripts/fsl/dvars.sh) as given by [Dr. Nichols' 2013 paper](https://arxiv.org/abs/1704.01469).
+
+However, we now use a package developed by Dr. Nichols and Soroosh Afyouni in 2017 called [DVARS](https://github.com/asoroosh/DVARS) associated with their [NeuroImage paper](https://doi.org/10.1016/j.neuroimage.2017.12.098) to calculate the "relative DVARS". For whatever reason, the results from the two methods are different by ~0.1% even after scaling (note that scaling DVARS will not influence our results). We still decided to use this one since it's newer and listed on [Dr. Nichols' website](http://www.nisox.org/Software/DSE/). It also does not require FSL (though it requires MATLAB's statistical toolbox). And most importantly, it has much fewer file IO, making it much faster than the old one on our server (10 min per run -> 100s per run).
+
+However, if you want to use the identical pipeline as Singh2020, you can set `use_old_fslDVARS = true` in `calc_DVAR_mod.m`.
 
 ## For Resting State Only (Singh et. al., 2020)
 
