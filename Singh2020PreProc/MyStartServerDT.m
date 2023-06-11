@@ -170,6 +170,7 @@ Filter = designfilt('bandstopfir', ...
 %build the File Structure to store the result data. and build the Filtered
 %FD and DVars
 for i = 1:length(Subjlist)
+
     BuildFileStructure(dtseries_dir, Subjlist{i}, tseries)
 
     for jj=1:numel(RrName)  %% Scan Sessions
@@ -177,7 +178,7 @@ for i = 1:length(Subjlist)
         BadFilesAll(tExtend,100);
     end
 
-
+    t0 = tic;
 
     %have the DVARs or FD's been Calculated?
     %WARNING If you try to make DVARs on CCPLINUX1 it will take a really
@@ -190,12 +191,18 @@ for i = 1:length(Subjlist)
     %respritory
     %to do fix where to look for HCP subjects
     disp('Filtering FDs and DVARS')
-    filter_FD_DVARS(Filter, Subjlist{i}, in_dir, dtseries_dir,tseries)
+    filter_FD_DVARS(Filter, Subjlist{i}, in_dir, dtseries_dir, tseries)
 
+    disp(['Elapsed time for generating filtered FD & DVARS for subject ' Subjlist{i} ' :'])
+    toc(t0)
+    t0 = tic;
 
     %Get the regressors for all the functioal connectivity
     disp('Running HCPregressorCompCor')
-    getHCPregressorsCompCor_final(Subjlist{i}, in_dir, dtseries_dir,tseries)
+    getHCPregressorsCompCor_final(Subjlist{i}, in_dir, dtseries_dir, tseries)
+
+    disp(['Elapsed time for generating CompCor regressors for subject ' Subjlist{i} ' :'])
+    toc(t0)
 end
 
 
@@ -223,11 +230,15 @@ end
 %Parc.name = 'Gordon324'
 %Parc.ordered = 1
 
+t0 = tic;
 disp('running dtSeries')%run a dense timeseries
 Myc_fcprocess_HCP_dtseries(switches, Subjlist, in_dir, dtseries_dir, tseries)
 %disp('running ptSeries')%run parcellated time series
 %c_fcprocess_HCP_ptseries(switches, Subjlist, in_dir, dtseries_dir, tseries, Parc)if strcmpi(Atlas(1),'y')
+disp('Elapsed time for dense timeseries preprocessing:')
+toc(t0)
 
+t0 = tic;
 if strcmpi(Atlas(1),'y')
     % if strcmpi(Atlas(2:end),'7')
     %     AllYeoParcellate7net(str2double(Subjlist),nGSR,'y',[],'n');
@@ -238,5 +249,7 @@ else
     % d112817ParcellateServer(str2double(Subjlist),nGSR,[],Atlas);
     error('Not implemented!')
 end
+disp('Elapsed time for parcellation:')
+toc(t0)
 
 end
