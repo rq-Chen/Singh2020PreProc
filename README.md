@@ -14,15 +14,16 @@ Apart from those, you also need to download `fieldtrip` and specify the fieldtri
 
 ~~You also need `FSL` if DVARS files are not available.~~ (no longer needed with DVARS package)
 
-Current available HCP data on the WUSTL NIL cluster:
+HCP data on the WUSTL NIL cluster:
 
 ```bash
+/net/10.20.145.163/HCPpackages01/unzip/1200subject
 /net/10.20.145.164/HCPpackages02/unzip/1200subject
 /net/10.20.145.162/HCPpackages03/unzip/1200subject
 /net/10.20.145.162/HCPpackages04/unzip/1200subject
 ```
 
-There should be six packages, each with 185-186 subjects. But currently only three are available (as for 2023/06/06).
+There should be six packages, each with 185-186 subjects. But currently only four are known, and they are sometimes not available either.
 
 ## Notes on DVARS
 
