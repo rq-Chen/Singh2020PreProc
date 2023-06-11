@@ -9,10 +9,14 @@
 %This funcion Checks for the DVAR's in both the input and the output.
 %if it is in the input copy it to the output
 %if the DVARs cannot be found generate them for the output
-function find_DVAR(in, out, Subject, tseries)
-    for i = 1:length(Subject)
-        for j = 1:length(tseries)
+function find_DVAR(in, out, Subjects, tseries)
+    if ~iscell(Subjects)
+        Subjects = {Subjects};
+    end
+    for i = 1:numel(Subjects)
+        for j = 1:numel(tseries)
             
+            Subject = Subjects{i};
             input = fullfile(in, Subject,'MNINonLinear','Results', tseries{j});%the file where the DVARs should be
             output = fullfile(out, Subject, 'Results', tseries{j} );%the file where we want to copt the DVARs to
             DVARName = [Subject '_' tseries{j} '_DVARS.txt']%name for the DVARs
@@ -45,3 +49,4 @@ function find_DVAR(in, out, Subject, tseries)
             end
         end
     end
+end
