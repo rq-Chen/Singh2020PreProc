@@ -282,7 +282,7 @@ else
     end
 
     myQC=QC(ll);
-save(outfilename,'dt','Subjlist','excluded','QC','myQC','switches','-v7.3')
+    save(outfilename,'dt','Subjlist','excluded','QC','myQC','switches','-v7.3')
         
 end
 end

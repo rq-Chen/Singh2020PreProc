@@ -21,6 +21,10 @@ function calc_DVAR_mod(in_dir, out_dir, subjlist, tseries)
                 tseries{j}, [tseries{j} '.nii.gz']);
             outFile = fullfile(out_dir, subjlist{i}, 'Results', ...
                 tseries{j}, [subjlist{i} '_' tseries{j} '_DVARS.txt']);
+            if ~exist(inFile, "file")
+                warning([inFile ' not found!']);
+                continue
+            end
             disp(['Creating Dvars for ' tseries{i}])
             disp(['Output Directory: ' outFile]); 
             if use_old_fslDVARS

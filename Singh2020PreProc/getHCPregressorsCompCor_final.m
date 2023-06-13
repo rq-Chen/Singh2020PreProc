@@ -8,6 +8,19 @@
 % All Rights Reserved
 function getHCPregressorsCompCor_final(Subject, in_dir, out_dir,tseries)
 
+% Handle missing data
+missFlag = zeros(numel(tseries), 1);
+for i = 1:numel(tseries)
+    if ~exist(fullfile(in_dir, Subject, 'MNINonLinear', 'Results', tseries{i}), "dir")
+        missFlag(i) = 1;
+    end
+end
+missFlag = logical(missFlag);
+tseries = tseries(~missFlag);
+if isempty(tseries)
+    return
+end
+
 %%GMkeeprgns	= [ 7 8 10 11 12 13 16 17 18 26 28 46 47 49 50 51 52 53 54 58 60 ];
 
 compcorregs = 1;
@@ -23,14 +36,14 @@ seCSF = strel('disk',1,0)
 
 
 
-    WMkeeprgns	= [ 2 41 ];%Keep the Areas in the aparc+aseg.nii.gz that have one of these values
-    CSFkeeprgns	= [ 4 14 15 43 ];%are these not present
-    tic
+WMkeeprgns	= [ 2 41 ];%Keep the Areas in the aparc+aseg.nii.gz that have one of these values
+CSFkeeprgns	= [ 4 14 15 43 ];%are these not present
+tic
 
-    sub= Subject
-    %%if ~exist(['/scratch/HCP_rfMRI/DTSERIES/' sub '/rfMRI_REST2_RL/WM_CSF_GM_regs.txt'],'file')
-    asegname = fullfile(in_dir, sub, '/MNINonLinear/aparc+aseg.nii.gz'); 
-    if exist(asegname,'file')
+sub= Subject
+%%if ~exist(['/scratch/HCP_rfMRI/DTSERIES/' sub '/rfMRI_REST2_RL/WM_CSF_GM_regs.txt'],'file')
+asegname = fullfile(in_dir, sub, '/MNINonLinear/aparc+aseg.nii.gz'); 
+if exist(asegname,'file')
     aseg = load_nifti(asegname);
     
 
@@ -122,11 +135,11 @@ seCSF = strel('disk',1,0)
                 fclose(fid)
             end
         end
-    toc
+        toc
     end
     fprintf('Subject Complete.\n')
-    else
-      excluded(n)=1;  
-    end
-    toc
+else
+    excluded(n)=1;  
+end
+toc
 %matlabpool close

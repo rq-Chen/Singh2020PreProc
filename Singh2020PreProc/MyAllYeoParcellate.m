@@ -24,8 +24,12 @@ end
 
 for iSub=1:numel(Subs)
     disp(iSub)
-    % load(strcat(bDir,bEnd,'sub',num2str(Subs(iSub)),Mid,num2str(GSR),Ending),'myQC','QC','Subjlist','switches','excluded','dt');
-    load(fullfile(bDir, bEnd, strcat('sub',num2str(Subs(iSub)),Mid,num2str(GSR),Ending)),'myQC','dt');
+    tmpFile = fullfile(bDir, bEnd, strcat('sub',num2str(Subs(iSub)),Mid,num2str(GSR),Ending));
+    if ~exist(tmpFile, "file")
+        warning(['Dense timeseries for subject ' num2str(Subs(iSub)) ' not found!'])
+        continue
+    end
+    load(tmpFile,'myQC','dt');
     for iY=1:numel(YeoSize)
         ParcName=strcat('Y',YeoSize{iY});
         cc=cell(1,4);

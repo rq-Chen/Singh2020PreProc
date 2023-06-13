@@ -6,12 +6,16 @@ function filter_FD_DVARS(Filter, Subject, in_dir, out_dir, tseries)
 
 % FDs
 
-sub_id = num2str(Subject)
+    sub_id = num2str(Subject)
     for i=1:length(tseries)
         %Read in the FD and Filter
         out = fullfile(out_dir, sub_id, 'Results', tseries{i} );%the file where we want to copt the FDs to
         if ~exist(fullfile(out, [sub_id '_' tseries{i} '_FD_FILT.txt']))
             FD = [sub_id '_' tseries{i} '_FD.txt']
+            if ~exist(fullfile(out, FD))
+                warning([tseries{i} ' not found!'])
+                continue
+            end
             FD_ = dlmread(fullfile(out, FD));%read in the FD
             FD_FILT = filtfilt(Filter,FD_);%filter the FD
             dlmwrite(fullfile(out, [sub_id '_' tseries{i} '_FD_FILT.txt']), FD_FILT)%write the filtered output

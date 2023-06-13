@@ -111,8 +111,8 @@ if nargin < 4
 end
 dtseries_dir = fullfile(out_dir, 'Out');
 
-RrName={'1_LR','1_RL','2_LR','2_RL'};
-BbName='rfMRI_REST';
+% RrName={'1_LR','1_RL','2_LR','2_RL'};
+% BbName='rfMRI_REST';
 % VarNames={'FD_FILT.txt','FD.txt','DVARS.txt','DVARS_FILT.txt','WM_CSF_GM_regs_hp200_clean.txt','WM_CSF_CompCor_regs_hp200_clean.txt'};
 % out_base=strcat('/scratch2/Singh/HCP/Out/');
 % dtseries_dir=strcat('/scratch2/Singh/HCP/GSR',num2str(nGSR),'/Out');
@@ -173,18 +173,13 @@ for i = 1:length(Subjlist)
 
     BuildFileStructure(dtseries_dir, Subjlist{i}, tseries)
 
-    for jj=1:numel(RrName)  %% Scan Sessions
-        tExtend=strcat(dtseries_dir,'/',Subjlist{i},'/Results/',BbName,RrName{jj},'/');
-        BadFilesAll(tExtend,100);
-    end
-
     t0 = tic;
 
     %have the DVARs or FD's been Calculated?
     %WARNING If you try to make DVARs on CCPLINUX1 it will take a really
     %long time.(like 10 mins per series) you may be better off loading them on to the cluster if you
     %have a lot of subjects to do
-    find_FD(in_dir, dtseries_dir, Subjlist{i},tseries);
+    find_FD(in_dir, dtseries_dir, Subjlist{i}, tseries);
     find_DVAR(in_dir, dtseries_dir, Subjlist{i}, tseries);
 
     %Filter the FD's and DVARS using the predefined 'Filter' to remove

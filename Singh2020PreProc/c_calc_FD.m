@@ -22,6 +22,8 @@ function c_calc_FD(in_dir, out_dir, subjects, tseries)
                         %get FD
                         get_FD(subjects{i}, tseries{j}, movregs, out_dir)
                     end
+                else
+                    warning([tseries{j} ' not found!'])
                 end
             end
         

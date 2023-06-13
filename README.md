@@ -9,13 +9,8 @@ This repo contains the fMRI preprocessing codes in the style of (Singh et. al., 
 HCP data on the WUSTL NIL cluster:
 
 ```bash
-/net/10.20.145.163/HCPpackages01/unzip/1200subject
-/net/10.20.145.164/HCPpackages02/unzip/1200subject
-/net/10.20.145.162/HCPpackages03/unzip/1200subject
-/net/10.20.145.162/HCPpackages04/unzip/1200subject
+/net/10.27.136.121/hcpdb/packages/unzip/HCP_1200
 ```
-
-There should be six packages, each with 185-186 subjects. But currently only four are known, and they are sometimes not available either.
 
 HCP data on the CHPC cluster:
 
@@ -23,7 +18,7 @@ HCP data on the CHPC cluster:
 /ceph/hcpdb/packages/unzip/HCP_1200
 ```
 
-It contains all 1113 subjects with neuroimaging data.
+They contain all 1113 subjects with neuroimaging data.
 
 ## Notes on DVARS
 
