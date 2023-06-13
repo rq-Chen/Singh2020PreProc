@@ -143,7 +143,7 @@ BbName='rfMRI_REST';
 %% add external tools
 
 % addpath('/scratch2/Singh/HCP')
-addpath(fullfile(script_dir, 'utilities', 'FSLNets'))          % for function nets_netmats
+% addpath(fullfile(script_dir, 'utilities', 'FSLNets'))          % for function nets_netmats
 addpath(fullfile(fieldtrip_dir))
 addpath(fullfile(fieldtrip_dir, 'utilities'))
 addpath(fullfile(fieldtrip_dir, 'external', 'freesurfer'))

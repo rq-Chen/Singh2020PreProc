@@ -2,4 +2,5 @@ fieldtrip
 
 GSR3
 
+# I use .out for matlab logs
 *.out
