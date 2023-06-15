@@ -34,7 +34,10 @@ for iSub=1:numel(Subs)
         ParcName=strcat('Y',YeoSize{iY});
         cc=cell(1,4);
         QC=myQC;
-        for j=1:numel(dt)
+        for j=1:numel(dt)  % Note: numel(dt) could be smaller than 4, e.g. when run 4 failed in dtseries processing
+            if isempty(dt{j})
+                continue
+            end
             dt{j}=zscore(dt{j}')';
             Qmod=QC;
             %        dt{j}=zscore(dt{j}')'; %#ok<AGROW> %% Already normalize elsewhere

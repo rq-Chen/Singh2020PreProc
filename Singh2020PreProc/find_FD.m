@@ -33,8 +33,11 @@ function find_FD(in, out, Subjects, tseries)
                 % disp(input)
                 disp('Will Begin generating')
                 disp(['Placing in: ' output])
-                c_calc_FD(in, output, {Subject}, tseries(j))
-            
+                try
+                    c_calc_FD(in, output, {Subject}, tseries(j))
+                catch
+                    warning(['Generating FD failed for subject ' Subject ' session ' tseries{j}])
+                end
             end
         end
     end

@@ -101,7 +101,7 @@ end
 
 script_dir = fileparts(mfilename('fullpath'));
 if nargin < 5
-    in_dir = '/net/10.20.145.162/HCPpackages03/unzip/1200subject';
+    in_dir = '/net/10.27.136.121/hcpdb/packages/unzip/HCP_1200/';
     fprintf('\n\nNo input directory provided. Default to %s\n\n', in_dir);
 end
 if nargin < 4
@@ -110,34 +110,6 @@ if nargin < 4
     fprintf('Default to a new folder in the father directory of this script: %s\n\n', out_dir);
 end
 dtseries_dir = fullfile(out_dir, 'Out');
-
-% RrName={'1_LR','1_RL','2_LR','2_RL'};
-% BbName='rfMRI_REST';
-% VarNames={'FD_FILT.txt','FD.txt','DVARS.txt','DVARS_FILT.txt','WM_CSF_GM_regs_hp200_clean.txt','WM_CSF_CompCor_regs_hp200_clean.txt'};
-% out_base=strcat('/scratch2/Singh/HCP/Out/');
-% dtseries_dir=strcat('/scratch2/Singh/HCP/GSR',num2str(nGSR),'/Out');
-
-% if strcmpi(copyBase(1),'y')
-%     for ii=1:numel(Subjlist)
-%         for jj=1:numel(RrName)  %% Scan Sessions
-%             tExtend=strcat('/',Subjlist{ii},'/Results/',BbName,RrName{jj},'/');
-
-%             tDestin=strcat(dtseries_dir,'/',tExtend);
-%             %tSource=strcat(out_base,tExtend);
-%             mkdir(tDestin);
-%             for kk=1:numel(VarNames)
-%                 if kk<5
-%                     cc=strcat('/',Subjlist{ii},'_',BbName,RrName{jj},'_',VarNames{kk});
-%                 else
-%                     cc=VarNames{kk};
-%                 end
-%                 copyfile(strcat(out_base,tExtend,cc),strcat(dtseries_dir,tExtend,cc));
-%             end
-%         end
-%     end
-% end
-
-% in_dir  = '/data/hcp-zfs/OpenAccess/1200subject/'; % the Directory where your subject data lives
 
 
 %% add external tools
@@ -167,10 +139,9 @@ Filter = designfilt('bandstopfir', ...
     'CutoffFrequency2', 0.14, ...
     'SampleRate', 1/switches.TR);
 
-%build the File Structure to store the result data. and build the Filtered
-%FD and DVars
 for i = 1:length(Subjlist)
 
+    %build the File Structure to store the result data
     BuildFileStructure(dtseries_dir, Subjlist{i}, tseries)
 
     t0 = tic;
@@ -198,6 +169,28 @@ for i = 1:length(Subjlist)
 
     disp(['Elapsed time for generating CompCor regressors for subject ' Subjlist{i} ' :'])
     toc(t0)
+
+    t0 = tic;
+    disp('running dtSeries')%run a dense timeseries
+    Myc_fcprocess_HCP_dtseries(switches, Subjlist(i), in_dir, dtseries_dir, tseries)
+    %disp('running ptSeries')%run parcellated time series
+    %c_fcprocess_HCP_ptseries(switches, Subjlist, in_dir, dtseries_dir, tseries, Parc)if strcmpi(Atlas(1),'y')
+    disp(['Elapsed time for dense timeseries preprocessing for subject ' Subjlist{i} ' :'])
+    toc(t0)
+    
+    t0 = tic;
+    if strcmpi(Atlas(1),'y')
+        % if strcmpi(Atlas(2:end),'7')
+        %     AllYeoParcellate7net(str2double(Subjlist(i)),nGSR,'y',[],'n');
+        % else
+            MyAllYeoParcellate(str2double(Subjlist(i)), nGSR, out_dir, [], 'n');
+        % end
+    else
+        % d112817ParcellateServer(str2double(Subjlist(i)),nGSR,[],Atlas);
+        error('Not implemented!')
+    end
+    disp(['Elapsed time for parcellation for subject ' Subjlist{i} ' :'])
+    toc(t0)
 end
 
 
@@ -224,27 +217,5 @@ end
 %Parc.NP = 324
 %Parc.name = 'Gordon324'
 %Parc.ordered = 1
-
-t0 = tic;
-disp('running dtSeries')%run a dense timeseries
-Myc_fcprocess_HCP_dtseries(switches, Subjlist, in_dir, dtseries_dir, tseries)
-%disp('running ptSeries')%run parcellated time series
-%c_fcprocess_HCP_ptseries(switches, Subjlist, in_dir, dtseries_dir, tseries, Parc)if strcmpi(Atlas(1),'y')
-disp('Elapsed time for dense timeseries preprocessing:')
-toc(t0)
-
-t0 = tic;
-if strcmpi(Atlas(1),'y')
-    % if strcmpi(Atlas(2:end),'7')
-    %     AllYeoParcellate7net(str2double(Subjlist),nGSR,'y',[],'n');
-    % else
-        MyAllYeoParcellate(str2double(Subjlist), nGSR, out_dir, [], 'n');
-    % end
-else
-    % d112817ParcellateServer(str2double(Subjlist),nGSR,[],Atlas);
-    error('Not implemented!')
-end
-disp('Elapsed time for parcellation:')
-toc(t0)
 
 end

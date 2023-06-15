@@ -14,6 +14,10 @@ function Subjlist = MyWrapper(nSub, out_dir, in_dir, exclude_sublist)
 %
 %   Usually, each subject needs ~18min on CCPLINUX1.
 
+% Compatiability issue
+assert(exist('readlines', 'builtin'), ...
+    'This script uses the function readlines(). Please modify the code or use R2020b+!')
+
 % Add scripts to path
 script_dir = fileparts(mfilename('fullpath'));
 addpath(fullfile(script_dir, 'Singh2020PreProc'))

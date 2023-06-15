@@ -43,8 +43,12 @@ function find_DVAR(in, out, Subjects, tseries)
                     % disp(input)
                     % disp('Will Begin generating')
                     disp(['Placing in: ' output])
-                    
-                    calc_DVAR_mod(in, out, {Subject}, tseries(j))
+
+                    try
+                        calc_DVAR_mod(in, out, {Subject}, tseries(j))
+                    catch
+                        warning(['Generating DVARS failed for subject ' Subject ' session ' tseries{j}])
+                    end                    
                 % end
             end
         end

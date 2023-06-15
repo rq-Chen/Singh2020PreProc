@@ -11,7 +11,7 @@ function getHCPregressorsCompCor_final(Subject, in_dir, out_dir,tseries)
 % Handle missing data
 missFlag = zeros(numel(tseries), 1);
 for i = 1:numel(tseries)
-    if ~exist(fullfile(in_dir, Subject, 'MNINonLinear', 'Results', tseries{i}), "dir")
+    if ~isfile(fullfile(in_dir, Subject, 'MNINonLinear', 'Results', tseries{i}, [tseries{i} '.nii.gz']))
         missFlag(i) = 1;
     end
 end

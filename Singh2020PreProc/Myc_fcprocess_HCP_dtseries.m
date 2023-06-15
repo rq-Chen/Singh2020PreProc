@@ -77,71 +77,64 @@ numregs = 25 + 3 * switches.GSR;
 
    
 
-%% restart
+% %% restart
 
-if switches.restart == 0
-    try
-        load(outfilename)
-    catch
-        fprintf('Data has not been processed yet.')
-    end
-end
+% if switches.restart == 0
+%     try
+%         load(outfilename)
+%     catch
+%         fprintf('Data has not been processed yet.')
+%     end
+% end
 
 %% CAROLINA not doing FC for all grayordinates
 
-excluded = zeros(1,1);
-
-QC = [];
-regs = [];
-runs = zeros(length(Subjlist),1);
 switches
 
 %% Do the stuff
 for ll = 1:length(Subjlist) % subjects
     
-   if switches.permutemask
-   outfilename = sprintf(fullfile(work_dir, 'outputs', 'sub%s_%s_norm_motion%d_GSR%d_crubPERM_frames%d_AveRun%d_fix%d_%sFC_dtseries.mat'),...
-   Subjlist{ll},switches.DataType, numregs,switches.GSR,switches.minframes,switches.AveRun,switches.FIX,switches.corrtype);
-elseif switches.runs
-   outfilename = sprintf(fullfile(work_dir, 'outputs', 'sub%s_%s_norm_motion%d_GSR%d_scrub%d_frames%d_AveRun%d_fix%d_%sFC_runs_dtseries.mat'),...
-   Subjlist{ll},switches.DataType, numregs,switches.GSR,100*(switches.FDcut),switches.minframes,switches.AveRun,switches.FIX,switches.corrtype);
-else
-   outfilename = sprintf(fullfile(work_dir, 'outputs', '%s_norm_motion%d_GSR%d_scrub%d_frames%d_AveRun%d_fix%d_%sFC_dtseries.mat'),...
-   switches.DataType, numregs,switches.GSR,100*(switches.FDcut),switches.minframes,switches.AveRun,switches.FIX,switches.corrtype);
+    if switches.permutemask
+        outfilename = sprintf(fullfile(work_dir, 'outputs', ...
+            'sub%s_%s_norm_motion%d_GSR%d_crubPERM_frames%d_AveRun%d_fix%d_%sFC_dtseries.mat'), ...
+            Subjlist{ll},switches.DataType, numregs,switches.GSR,switches.minframes,...
+            switches.AveRun,switches.FIX,switches.corrtype);
+    elseif switches.runs
+        outfilename = sprintf(fullfile(work_dir, 'outputs', ...
+            'sub%s_%s_norm_motion%d_GSR%d_scrub%d_frames%d_AveRun%d_fix%d_%sFC_runs_dtseries.mat'),...
+            Subjlist{ll},switches.DataType, numregs,switches.GSR,100*(switches.FDcut),switches.minframes,...
+            switches.AveRun,switches.FIX,switches.corrtype);
+    else
+        outfilename = sprintf(fullfile(work_dir, 'outputs', '%s_norm_motion%d_GSR%d_scrub%d_frames%d_AveRun%d_fix%d_%sFC_dtseries.mat'),...
+            switches.DataType, numregs,switches.GSR,100*(switches.FDcut),switches.minframes,switches.AveRun,switches.FIX,switches.corrtype);
     end
-    
-    
-    
-    
-    
+
     sub = num2str(Subjlist{ll});
     fprintf('Loading Subj: %s\n', sub)
     if ll ==  2
         fprintf('Here')
     end
     sub_dir = fullfile(source_dir, sub);
-
-    try
-             
-        dt=[];
-
-        for t = 1:NR % runs 
             
+    dt = [];
+
+    for t = 1:NR % runs 
+
+        try    
             if switches.FIX % passed through ICA-FIX
                 runname = fullfile(sub_dir, 'MNINonLinear', 'Results', tseries{t}, [tseries{t} '_Atlas_MSMAll_hp2000_clean']);
             else
                 runname = fullfile(sub_dir, 'MNINonLinear', 'Results', tseries{t}, [tseries{t} '_Atlas']);
             end
-            
-            [runpath, runfile] = fileparts(runname);
+
             dtseries = fullfile([runname '.dtseries.nii']);
             
             % read image
             disp('Reading in image')
             raw_cii = ft_read_cifti_mod(dtseries); % this is Siegel's modified version. Wasn't provided at the beginning
-            dtmean = nanmean(raw_cii.data,2);
+            % dtmean = nanmean(raw_cii.data,2);
             dtstd = nanstd(raw_cii.data, [], 2);
-            tp = size(raw_cii.data, 2);
+            % tp = size(raw_cii.data, 2);
             vox = size(raw_cii.data, 1);
             
             % DEMEAN
@@ -149,7 +142,7 @@ else
             raw_cii.data = raw_cii.data./repmat(dtstd,1,size(raw_cii.data,2));
             % DEDRIFT
             raw_cii.data = detrend(raw_cii.data');
-            rawTC = raw_cii.data';
+            % rawTC = raw_cii.data';
             
             % LOAD 24 PARAM NUISANCE REGRESSION
             MV = importdata(fullfile(sub_dir, 'MNINonLinear', 'Results', tseries{t},'Movement_Regressors.txt'));
@@ -163,7 +156,7 @@ else
                 
             elseif switches.GSR == 1 %(mean WM, CSF, GM timecourses)
                 
-                GS = mean(raw_cii.data,2);
+                % GS = mean(raw_cii.data,2);
                 global_regs = zscore(importdata(fullfile(work_dir, sub, 'Results', tseries{t},'WM_CSF_GM_regs.txt')));
                 global_regs_prime = [[0 0 0]; diff(global_regs)];
                 regs = [ global_regs global_regs_prime ones(size(regs,1),1)];
@@ -178,7 +171,7 @@ else
                 end
                 
                 regs = [ CompCor_regs(:,1:10) ones(size(regs,1),1)];
- 
+
                 
             elseif switches.GSR == 3 % compcor and global mean?
                 
@@ -193,7 +186,7 @@ else
                 regs = [ CompCor_regs(:,1:10) global_regs(:,3) ones(size(regs,1),1)];
             end % regs
             
-            QC(ll).run(t).regs=regs;
+            myQC.run(t).regs=regs;
             
             %% APPLY REGRESSORS
             disp('Applying Regressors')
@@ -205,84 +198,87 @@ else
                 
             end % regress
             disp('done with vox')
-            QC(ll).run(t).tmask = zeros(size(raw_cii.time));
+            myQC.run(t).tmask = zeros(size(raw_cii.time));
             
             %% FD Scrubbing
             
             if switches.FDcut                
                 
-                [status,filename] = system(['ls ' fullfile(work_dir, sub, 'Results', tseries{t}, [ sub '_' tseries{t} '_FD.txt'])]);
+                [~,filename] = system(['ls ' fullfile(work_dir, sub, 'Results', tseries{t}, [ sub '_' tseries{t} '_FD.txt'])]);
                                         
-                QC(ll).run(t).FD=single(importdata(strcat(filename)));
-                               
-                QC(ll).run(t).tmask(1) = 1;
-                pfd = find(QC(ll).run(t).FD>switches.FDcut);
-                QC(ll).run(t).tmask(pfd) = 1;
+                myQC.run(t).FD=single(importdata(strcat(filename)));
+                            
+                myQC.run(t).tmask(1) = 1;
+                pfd = find(myQC.run(t).FD>switches.FDcut);
+                myQC.run(t).tmask(pfd) = 1;
                 
             end
             
             %% DVAR Scrubbing
             disp('DVAR Scrubbing')
             if switches.DVARcut
-                               
-                [status,filename] = system(['ls ' fullfile(work_dir, sub, 'Results', tseries{t}, [sub '_' tseries{t} '_DVARS.txt'])]);
-                                              
-                QC(ll).run(t).DV=single(importdata(strcat(filename)));
+                            
+                [~,filename] = system(['ls ' fullfile(work_dir, sub, 'Results', tseries{t}, [sub '_' tseries{t} '_DVARS.txt'])]);
+                                            
+                myQC.run(t).DV=single(importdata(strcat(filename)));
                 
-                subDVcut = median(QC(ll).run(t).DV(2:end))*switches.DVARcut ;
-                pdv = find(QC(ll).run(t).DV>subDVcut);
-                QC(ll).run(t).tmask(pdv)=1;
-                QC(ll).run(t).tmask=single(QC(ll).run(t).tmask(1:length(QC(ll).run(t).DV)));
+                subDVcut = median(myQC.run(t).DV(2:end))*switches.DVARcut ;
+                pdv = find(myQC.run(t).DV>subDVcut);
+                myQC.run(t).tmask(pdv)=1;
+                myQC.run(t).tmask=single(myQC.run(t).tmask(1:length(myQC.run(t).DV)));
                 
             end % DVARS scrubbing
             
-            tmask = QC(ll).run(t).tmask;
+            tmask = myQC.run(t).tmask;
             
             %% permute
             if switches.permutemask %% OPTIONALLY PERMUTE TMASK
                 
-                tmaskorder = randperm(length(QC(ll).run(t).tmask));
-                tmask = QC(ll).run(t).tmask(tmaskorder);
+                tmaskorder = randperm(length(myQC.run(t).tmask));
+                tmask = myQC.run(t).tmask(tmaskorder);
                 
             end % permute tmask
-          
+        
                         
             %% Apply mask
             disp('Applying Mask')
             dt{t} = raw_cii.data';
             dt{t} = dt{t}(:,tmask==0);
             
-            QC(ll).frames(t) = sum(tmask==0);
-            QC(ll).excluded(1:NR) = 0;
-                        
-        end %% series
-        
-        %% Some QC stuff?
-        disp('QC-ing')
-        if QC(ll).frames(1) < switches.minframes || QC(ll).frames(2) < switches.minframes
-            %dt(1:2)=[];
-            %QC(n).frames(1:2)=0;
-            QC(ll).excluded(1:NR)=1;
-        end
-        
-        excluded(ll) = 0; %MITCH Set default values to initiate variable
-        
-        if sum(QC(ll).excluded) == NR;
-            excluded(ll)=1;
-        end
-        
-    catch
-        sprintf('Subject Failed.\n')
-        bugs(ll) = 1;
-        
-    end
+            myQC.frames(t) = sum(tmask==0);
     
-    if excluded(ll)==1
-        sprintf('Subject Excluded.\n')
+        catch
+            warning(['Error in subject ' sub ' session ' tseries{t}])        
+        end        
+                    
     end
 
-    myQC=QC(ll);
-    save(outfilename,'dt','Subjlist','excluded','QC','myQC','switches','-v7.3')
+    if isempty(dt)
+        warning(['All sessions failed for subject ' sub '! Will not save dtseries.'])
+        continue
+    end
+
+    % %% Some QC stuff?
+    % disp('QC-ing')
+    % myQC.excluded(1:NR) = 0;
+    % if myQC.frames(1) < switches.minframes || myQC.frames(2) < switches.minframes
+    %     %dt(1:2)=[];
+    %     %QC(n).frames(1:2)=0;
+    %     myQC.excluded(1:NR)=1;
+    % end
+    
+    % excluded = 0; %MITCH Set default values to initiate variable
+    
+    % if sum(myQC.excluded) == NR
+    %     excluded=1;
+    % end
+    
+    % if excluded==1
+    %     sprintf('Subject Excluded.\n')
+    % end
+
+    save(outfilename,'dt', 'myQC', 'switches','-v7.3')
+
         
 end
 end
