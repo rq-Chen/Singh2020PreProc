@@ -26,7 +26,7 @@ function filter_FD_DVARS(Filter, Subject, in_dir, out_dir, tseries)
         % DVars
         if ~isfile(fullfile(out, [sub_id '_' tseries{i} '_DVARS_FILT.txt']))
             DVAR = [sub_id '_' tseries{i} '_DVARS.txt']
-            if ~isfile(fullfile(out, DVARS))
+            if ~isfile(fullfile(out, DVAR))
                 warning([tseries{i} ' DVARS not found!'])
                 continue
             end
