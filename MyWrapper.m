@@ -15,7 +15,7 @@ function Subjlist = MyWrapper(nSub, out_dir, in_dir, exclude_sublist)
 %   Usually, each subject needs ~18min on CCPLINUX1.
 
 % Compatiability issue
-assert(exist('readlines', 'builtin'), ...
+assert(exist('readlines', 'builtin') || exist('readlines', 'file'), ...
     'This script uses the function readlines(). Please modify the code or use R2020b+!')
 
 % Add scripts to path
