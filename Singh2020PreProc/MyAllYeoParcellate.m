@@ -34,7 +34,7 @@ for iSub=1:numel(Subs)
         ParcName=strcat('Y',YeoSize{iY});
         cc=cell(1,4);
         QC=myQC;
-        for j=1:numel(dt)  % Note: numel(dt) could be smaller than 4, e.g. when run 4 failed in dtseries processing
+        for j=1:numel(dt)  % Note: in older version numel(dt) could be smaller than 4, e.g. when run 4 failed in dtseries processing
             if isempty(dt{j})
                 continue
             end

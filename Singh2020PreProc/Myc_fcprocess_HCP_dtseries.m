@@ -116,7 +116,10 @@ for ll = 1:length(Subjlist) % subjects
     end
     sub_dir = fullfile(source_dir, sub);
             
-    dt = [];
+    dt = cell(1, NR);
+    myQC = struct();
+    myQC.run = struct('regs', cell(1, NR), 'tmask', cell(1, NR), 'FD', cell(1, NR), 'DV', cell(1, NR));
+    myQC.frames = nan(1, NR);  
 
     for t = 1:NR % runs 
 
@@ -248,12 +251,12 @@ for ll = 1:length(Subjlist) % subjects
             myQC.frames(t) = sum(tmask==0);
     
         catch
-            warning(['Error in subject ' sub ' session ' tseries{t}])        
+            warning(['Error in subject ' sub ' session ' tseries{t}])
         end        
                     
     end
 
-    if isempty(dt)
+    if all(cellfun(@isempty, dt))
         warning(['All sessions failed for subject ' sub '! Will not save dtseries.'])
         continue
     end
