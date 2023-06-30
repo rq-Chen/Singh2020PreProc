@@ -24,7 +24,7 @@ addpath(fullfile(script_dir, 'Singh2020PreProc'))
 
 % Inputs
 if nargin < 4
-    exclude_sublist = fullfile(script_dir, 'old_subjlist.txt');
+    exclude_sublist = "";
 end
 if nargin < 3 || isempty(in_dir)
     in_dir = '/net/10.27.136.121/hcpdb/packages/unzip/HCP_1200';
@@ -65,6 +65,10 @@ newSub = setdiff(allSub, oldSub);
 
 % Processing
 nSub = min(nSub, numel(newSub));
+if nSub == 0
+    warning('No new subject to process!')
+    return
+end
 Subjlist = newSub(1:nSub)
 t1 = tic;
 MyStartServerDT(Subjlist, 3, 'y', out_dir, in_dir);
