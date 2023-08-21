@@ -246,7 +246,7 @@ for ll = 1:length(Subjlist) % subjects
             %% Apply mask
             disp('Applying Mask')
             dt{t} = raw_cii.data';
-            dt{t} = dt{t}(:,tmask==0);
+            dt{t} = dt{t}(:,tmask==0);  % Note: the removed frames will be interpolated back in MyAllYeoParcellate.m
             
             myQC.frames(t) = sum(tmask==0);
     
