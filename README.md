@@ -1,10 +1,48 @@
-# Preprocessing Code for MINDy
+# Preprocessing Code for MINDy Resting State Model
 
 Author: Matthew Singh.
 
 Modified and documented by Ruiqi Chen (2023).
 
-This repo contains the fMRI preprocessing codes in the style of (Singh et. al., 2020). There are two versions, one for resting state data only, and the other for resting state and task data simultaneously. Currently we have only cleaned up the one for resting state data and put them into `Singh2020PreProc`. The other scripts are dumped into the folder `SuperMessy`.
+This repo contains the fMRI preprocessing codes in the style of (Singh et. al., 2020). Here is the pipeline (for details see (Singh et al., 2020)):
+
+- HCP protocol: ICA-FIX
+- (Siegel et. al., 2017) protocol:
+    - Detrending
+    - Motion scrubbing:
+        - Framewise Displacement (FD)
+        - Temporal derivative of variation (DVARS)
+        - FD and DVARS were filtered for respiratory artifact before use
+        - Note: the last frame was discarded.
+    - Additional motion removal (three versions - the most complete one was used in (Singh et. al., 2020)):
+        - 12 HCP motion regressors & their derivatives
+        - (on top of above) CompCor: PC of white matter and cerebrospinal fluid signals
+        - (on top of above) Global signal regression (GSR): mean signals from white matter, cerebrospinal fluid and grey matter
+- Parcellation according to all levels of Schaefer atlas (Schaefer et al., 2018):
+    - Note: the first frame was discarded.
+- Extra preprocessing by MINDy functions (not included in this repo).
+
+## Notes on DVARS
+
+The original (Singh et al., 2020) paper uses FSL and a bash script (`Singh2020PreProc/utilities/dvars_nichols.sh`) from Thomas Nichols to compute "standardized DVARS". Seems like this script came from [here](https://warwick.ac.uk/fac/sci/statistics/staff/academic-research/nichols/scripts/fsl/dvars.sh) as given by [Thomas Nichols' 2013 paper](https://arxiv.org/abs/1704.01469).
+
+However, we now use a package developed by Nichols and Afyouni in 2017 called [DVARS](https://github.com/asoroosh/DVARS) associated with their [NeuroImage paper](https://doi.org/10.1016/j.neuroimage.2017.12.098) to calculate the "relative DVARS". For whatever reason, the results from the two methods are different by ~0.1% even after scaling (note that scaling DVARS will not influence our results). We still decided to use this one since it's newer and listed on [Thomas Nichols' website](http://www.nisox.org/Software/DSE/). It also does not require FSL (though it requires MATLAB's statistical toolbox). And most importantly, it has much fewer file IO, making it much faster than the old one on our server (10 min per run -> 100s per run).
+
+However, if you want to use the identical pipeline as Singh2020, you can set `use_old_fslDVARS = true` in `calc_DVAR_mod.m`.
+
+There is one subtle issue in the way we apply DVARS scrubbing. Both `FD(t)` and `DVARS(t)` were computed using frame `t - 1` and frame `t`, thus having length `T - 1` if the original data has length `T`. However, we added a leading 0 to `FD` but did not do that for `DVARS`. Therefore, frame `t` will be censored if frame `t` is too different from frame `t - 1` using the criterion of FD, while frame `t - 1` will be censored in the cases of DVARS. This might be a problem but we haven't had time to fix yet (will do).
+
+## Directory Structure
+
+The directory `Singh2020PreProc` contains the main scripts. You'll need to add this folder to MATLAB path. Alternatively, you can call the wrapper `MyWrapper.m` from the root which will identify the unprocessed data folders, manage the paths and run the codes.
+
+The subdirectory `Singh2020PreProc/utilities` contains the external package `DVARS` and some atlas files.
+
+Apart from those, you need to download `fieldtrip` and specify the fieldtrip directory at the beginning of `Singh2020PreProc/MyStartServerDT.m`.
+
+If you want to compute DVARS with the old bash scripts instead of the MATLAB package, you'll also need to set up FSL.
+
+## Data
 
 HCP data on the WUSTL NIL cluster:
 
@@ -20,55 +58,10 @@ HCP data on the CHPC cluster:
 
 They contain all 1113 subjects with neuroimaging data.
 
-## Notes on DVARS
+## References
 
-The original (Singh et. al., 2020) paper uses FSL and a bash script (`Singh2020PreProc/utilities/dvars_nichols.sh`) from Dr. Thomas Nichols to compute "standardized DVARS". Seems like this script came from [here](https://warwick.ac.uk/fac/sci/statistics/staff/academic-research/nichols/scripts/fsl/dvars.sh) as given by [Dr. Nichols' 2013 paper](https://arxiv.org/abs/1704.01469).
+Singh, M. F., Braver, T. S., Cole, M. W., & Ching, S. (2020). Estimation and validation of individualized dynamic brain models with resting state fMRI. NeuroImage, 221, 117046. https://doi.org/10.1016/j.neuroimage.2020.117046
 
-However, we now use a package developed by Dr. Nichols and Soroosh Afyouni in 2017 called [DVARS](https://github.com/asoroosh/DVARS) associated with their [NeuroImage paper](https://doi.org/10.1016/j.neuroimage.2017.12.098) to calculate the "relative DVARS". For whatever reason, the results from the two methods are different by ~0.1% even after scaling (note that scaling DVARS will not influence our results). We still decided to use this one since it's newer and listed on [Dr. Nichols' website](http://www.nisox.org/Software/DSE/). It also does not require FSL (though it requires MATLAB's statistical toolbox). And most importantly, it has much fewer file IO, making it much faster than the old one on our server (10 min per run -> 100s per run).
+Siegel, J. S., Mitra, A., Laumann, T. O., Seitzman, B. A., Raichle, M., Corbetta, M., & Snyder, A. Z. (2017). Data Quality Influences Observed Links Between Functional Connectivity and Behavior. Cerebral Cortex, 27(9), 4492–4502. https://doi.org/10.1093/cercor/bhw253
 
-However, if you want to use the identical pipeline as Singh2020, you can set `use_old_fslDVARS = true` in `calc_DVAR_mod.m`.
-
-## For Resting State Only (Singh et. al., 2020)
-
-The directory `Singh2020PreProc` contains the main scripts. You'll need to add this folder to MATLAB path.
-
-The subdirectory `utilities` contains the external package `DVARS` and some atlas files.
-
-Apart from those, you need to download `fieldtrip` and specify the fieldtrip directory at the beginning of `MyStartServerDT.m`.
-
-If you want to compute DVARS with the old bash scripts instead of the MATLAB package, you'll also need to set up FSL.
-
-### Preprocessing Pipeline
-
-- HCP protocol: ICA-FIX
-- (Siegel et. al., 2017) protocol:
-    - Detrending
-    - Motion scrubbing:
-        - Framewise Displacement (FD)
-        - Temporal derivative of variation (DVARS)
-    - Respiratory artifact removal
-    - Additional motion removal (three versions - the most complete one was used in (Singh et. al., 2020)):
-        - 12 HCP motion regressors & their derivatives
-        - (on top of above) CompCor: PC of white matter and cerebrospinal fluid signals
-        - (on top of above) Global signal regression (GSR): mean signals from white matter, cerebrospinal fluid and grey matter
-- Parcellation
-- Extra preprocessing by MINDy functions (not included in this repo).
-
-## For Both Resting State & Tasks
-
-### Preprocessing Pipeline
-
-This version does not use ICA-FIX and DVARS-based cut, since those are usually only used for resting state data. Using this version, the resting state and task data will be preprocessed in a same way.
-
-### `MyStartServerDT_HCP_Simple_00`
-
-Main function. Just a wrapper. Calls `MyStartServerDT_HCP_All`.
-
-### `MyStartServerDT_HCP_All`
-
-- Add some paths
-- Find or generate and then save `RestOut`.
-    - `RestOut` is computed by `MyStartServerDT_HCP_All_restpart`.
-- Find or generate and then save `TaskOut` and merge all `TaskOut` into `FullTaskOut`.
-    - `TaskOut` is computed by `MyStartServerDT_HCP_All_taskpart`.
-- Call `Myc_fcprocess_HCP_All` with `RestOut` and `FullTaskOut`.
+Schaefer, A., Kong, R., Gordon, E. M., Laumann, T. O., Zuo, X.-N., Holmes, A. J., Eickhoff, S. B., & Yeo, B. T. T. (2018). Local-Global Parcellation of the Human Cerebral Cortex from Intrinsic Functional Connectivity MRI. Cerebral Cortex, 28(9), 3095–3114. https://doi.org/10.1093/CERCOR/BHX179
