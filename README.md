@@ -22,6 +22,8 @@ This repo contains the fMRI preprocessing codes in the style of (Singh et. al., 
     - Note: the first frame was discarded.
 - Extra preprocessing by MINDy functions (not included in this repo).
 
+Known bug: we accidentally used the unfiltered FD for motion scrubbing. The code has been modified but the processing has not been rerun yet.
+
 ## Notes on DVARS
 
 The original (Singh et al., 2020) paper uses FSL and a bash script (`Singh2020PreProc/utilities/dvars_nichols.sh`) from Thomas Nichols to compute "standardized DVARS". Seems like this script came from [here](https://warwick.ac.uk/fac/sci/statistics/staff/academic-research/nichols/scripts/fsl/dvars.sh) as given by [Thomas Nichols' 2013 paper](https://arxiv.org/abs/1704.01469).

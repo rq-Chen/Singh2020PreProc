@@ -207,7 +207,7 @@ for ll = 1:length(Subjlist) % subjects
             
             if switches.FDcut                
                 
-                [~,filename] = system(['ls ' fullfile(work_dir, sub, 'Results', tseries{t}, [ sub '_' tseries{t} '_FD.txt'])]);
+                [~,filename] = system(['ls ' fullfile(work_dir, sub, 'Results', tseries{t}, [ sub '_' tseries{t} '_FD_FILT.txt'])]);
                                         
                 myQC.run(t).FD=single(importdata(strcat(filename)));
                             
@@ -221,7 +221,7 @@ for ll = 1:length(Subjlist) % subjects
             disp('DVAR Scrubbing')
             if switches.DVARcut
                             
-                [~,filename] = system(['ls ' fullfile(work_dir, sub, 'Results', tseries{t}, [sub '_' tseries{t} '_DVARS.txt'])]);
+                [~,filename] = system(['ls ' fullfile(work_dir, sub, 'Results', tseries{t}, [sub '_' tseries{t} '_DVARS_FILT.txt'])]);
                                             
                 myQC.run(t).DV=single(importdata(strcat(filename)));
                 
