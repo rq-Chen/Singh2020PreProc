@@ -28,13 +28,14 @@ function calc_DVAR_mod(in_dir, out_dir, subjlist, tseries)
             disp(['Creating Dvars for ' tseries{i}])
             disp(['Output Directory: ' outFile]); 
             if use_old_fslDVARS
-                system([DVARSsh ' ' inFile ' ' outFile]);
+                system([DVARSsh ' ' inFile ' ' outFile ' && sed -i "1i 0" ' outFile]);  % Add 0 to the first line
             else
                 [~, stats] = DVARSCalc(inFile, 'RDVARS');
                 try
-                    writematrix(stats.RDVARS', outFile);
+                    writematrix([0; stats.RDVARS'], outFile);  % Add 0 to the first line
                 catch
                     fid = fopen(outFile, "w");
+                    fprintf(fid, '0\n');  % Add 0 to the first line
                     fprintf(fid, '%f\n', stats.RDVARS');
                     fclose(fid);
                 end

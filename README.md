@@ -22,8 +22,6 @@ This repo contains the fMRI preprocessing codes in the style of (Singh et. al., 
     - Note: the first frame was discarded.
 - Extra preprocessing by MINDy functions (not included in this repo).
 
-Known bug: we accidentally used the unfiltered FD for motion scrubbing. The code has been modified but the processing has not been rerun yet.
-
 ## Notes on DVARS
 
 The original (Singh et al., 2020) paper uses FSL and a bash script (`Singh2020PreProc/utilities/dvars_nichols.sh`) from Thomas Nichols to compute "standardized DVARS". Seems like this script came from [here](https://warwick.ac.uk/fac/sci/statistics/staff/academic-research/nichols/scripts/fsl/dvars.sh) as given by [Thomas Nichols' 2013 paper](https://arxiv.org/abs/1704.01469).
@@ -31,8 +29,6 @@ The original (Singh et al., 2020) paper uses FSL and a bash script (`Singh2020Pr
 However, we now use a package developed by Nichols and Afyouni in 2017 called [DVARS](https://github.com/asoroosh/DVARS) associated with their [NeuroImage paper](https://doi.org/10.1016/j.neuroimage.2017.12.098) to calculate the "relative DVARS". For whatever reason, the results from the two methods are different by ~0.1% even after scaling (note that scaling DVARS will not influence our results). We still decided to use this one since it's newer and listed on [Thomas Nichols' website](http://www.nisox.org/Software/DSE/). It also does not require FSL (though it requires MATLAB's statistical toolbox). And most importantly, it has much fewer file IO, making it much faster than the old one on our server (10 min per run -> 100s per run).
 
 However, if you want to use the identical pipeline as Singh2020, you can set `use_old_fslDVARS = true` in `calc_DVAR_mod.m`.
-
-There is one subtle issue in the way we apply DVARS scrubbing. Both `FD(t)` and `DVARS(t)` were computed using frame `t - 1` and frame `t`, thus having length `T - 1` if the original data has length `T`. However, we added a leading 0 to `FD` but did not do that for `DVARS`. Therefore, frame `t` will be censored if frame `t` is too different from frame `t - 1` using the criterion of FD, while frame `t - 1` will be censored in the cases of DVARS. This might be a problem but we haven't had time to fix yet (will do).
 
 ## Directory Structure
 
