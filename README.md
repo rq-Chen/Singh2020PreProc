@@ -11,7 +11,8 @@ This repo contains the fMRI preprocessing codes in the style of (Singh et. al., 
     - Detrending
     - Motion scrubbing:
         - Framewise Displacement (FD): >0.2mm
-        - Temporal derivative of variation (DVARS): >1.05*median
+        - Temporal derivative of variation (DVARS): >1.05*median.
+            - Note: DVARS was calculated using the "minimally preprocessed" data from HCP WITHOUT ICA-FIX!
         - FD and DVARS were filtered for respiratory artifact before use
         - Note: the last frame was discarded.
     - Additional nuisance regression (three versions - the most complete one was used in (Singh et. al., 2020)):
