@@ -10,14 +10,14 @@ This repo contains the fMRI preprocessing codes in the style of (Singh et. al., 
 - (Siegel et. al., 2017) protocol:
     - Detrending
     - Motion scrubbing:
-        - Framewise Displacement (FD)
-        - Temporal derivative of variation (DVARS)
+        - Framewise Displacement (FD): >0.2mm
+        - Temporal derivative of variation (DVARS): >1.05*median
         - FD and DVARS were filtered for respiratory artifact before use
         - Note: the last frame was discarded.
-    - Additional motion removal (three versions - the most complete one was used in (Singh et. al., 2020)):
-        - 12 HCP motion regressors & their derivatives
-        - (on top of above) CompCor: PC of white matter and cerebrospinal fluid signals
-        - (on top of above) Global signal regression (GSR): mean signals from white matter, cerebrospinal fluid and grey matter
+    - Additional nuisance regression (three versions - the most complete one was used in (Singh et. al., 2020)):
+        - no extra removal
+        - (on top of above) CompCor: the top five PCs of white matter and cerebrospinal fluid signals
+        - (on top of above) Global signal regression (GSR): mean signal from gray matter
 - Parcellation according to all levels of Schaefer atlas (Schaefer et al., 2018):
     - Note: the first frame was discarded.
 - Extra preprocessing by MINDy functions (not included in this repo).
