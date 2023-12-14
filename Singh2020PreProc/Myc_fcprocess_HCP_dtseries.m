@@ -148,14 +148,14 @@ for ll = 1:length(Subjlist) % subjects
             % rawTC = raw_cii.data';
             
             % LOAD 24 PARAM NUISANCE REGRESSION
-            MV = importdata(fullfile(sub_dir, 'MNINonLinear', 'Results', tseries{t},'Movement_Regressors.txt'));
-            MVdt = importdata(fullfile(sub_dir, 'MNINonLinear', 'Results', tseries{t},'Movement_Regressors_dt.txt'));
-            regs = zscore([MV MVdt]);
+            % MV = importdata(fullfile(sub_dir, 'MNINonLinear', 'Results', tseries{t},'Movement_Regressors.txt'));
+            % MVdt = importdata(fullfile(sub_dir, 'MNINonLinear', 'Results', tseries{t},'Movement_Regressors_dt.txt'));
+            regs = ones(size(raw_cii.data,2),1);
             
             %% DONT NEED TO USE 24 REGS IN FIX-ICA            
             if switches.GSR == 0
                 
-                regs = [regs ones(size(regs,1),1)];
+                regs = regs;
                 
             elseif switches.GSR == 1 %(mean WM, CSF, GM timecourses)
                 

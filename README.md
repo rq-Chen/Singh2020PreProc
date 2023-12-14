@@ -1,12 +1,12 @@
-# Preprocessing Code for MINDy Resting State Model
+# Preprocessing Code for MINDy HCP rfMRI Model
 
-Author: Matthew Singh.
+Author: Joshua Siegel and Matthew Singh.
 
 Modified and documented by Ruiqi Chen (2023).
 
-This repo contains the fMRI preprocessing codes in the style of (Singh et. al., 2020). Here is the pipeline (for details see (Singh et al., 2020)):
+This repo contains the preprocessing scripts for HCP rfMRI data in the style of (Singh et. al., 2020). Here is the pipeline (for details see (Singh et al., 2020)):
 
-- HCP protocol: ICA-FIX
+- HCP protocol: FIX-cleaned data (with FIX-ICA and motion correction)
 - (Siegel et. al., 2017) protocol:
     - Detrending
     - Motion scrubbing (linearly interpolating (but not extrapolating) high-motion frames):
@@ -15,12 +15,14 @@ This repo contains the fMRI preprocessing codes in the style of (Singh et. al., 
             - Note: DVARS was calculated using the "minimally preprocessed" data from HCP WITHOUT ICA-FIX!
         - FD and DVARS were filtered for respiratory artifact before use
     - Additional nuisance regression (three versions - the most complete one was used in (Singh et. al., 2020)):
-        - no extra removal
-        - (on top of above) CompCor: the top five PCs of white matter and cerebrospinal fluid signals
-        - (on top of above) Global signal regression (GSR): mean signal from gray matter
-- Parcellation according to all levels of Schaefer atlas (Schaefer et al., 2018):
-- The first frame was discarded (it is always marked as high motion and will be replaced with NaN during interpolation).
+        - (`GSR0`) just remove parcel mean;
+        - (`GSR2`) (on top of above) CompCor: the top five PCs of white matter and cerebrospinal fluid signals;
+        - (`GSR3`) (on top of above) Global signal regression (GSR): mean signal from gray matter.
+- Averaging within each parcel accroding to all levels of Schaefer atlas (Schaefer et al., 2018):
+- The first frame was discarded.
 - Extra preprocessing by MINDy functions (not included in this repo).
+
+The entry point is `Singh2020PreProc/MyStartServerDT`. See the comments in that file for details. You need to add that folder to MATLAB path.
 
 ## Notes on DVARS
 
@@ -40,7 +42,25 @@ Apart from those, you need to download `fieldtrip` and specify the fieldtrip dir
 
 If you want to compute DVARS with the old bash scripts instead of the MATLAB package, you'll also need to set up FSL.
 
-## Data
+### I/O
+
+The default input and output folders are specified in `MyWrapper.m`. The input folder should be the HCP folder (containing one subfolder for each participant) and the output folder will contain one MAT file for each participant and each level of parcellation, entitled like `sub[HCP_ID]Y[xx].mat` where `[xx]` is the number of parcels divided by 100, e.g., `sub100206Y01.mat`. Each file contains a single structure `X` with the following fields that worth mentioning:
+
+- `Dat`: The data. `(1, nRuns)` cell array with each cell being a `(nParcels + 19, 1199)` matrix. `nRuns` is usually four (`{'rfMRI_REST1_LR', 'rfMRI_REST1_RL', 'rfMRI_REST2_LR', 'rfMRI_REST2_RL'}`) but can be smaller for participants with missing data. The parcels are in the order of Schaefer atlas (Schaefer et al., 2018), followed by the 19 FreeSurfer subcortical regions. The timepoint corresponds to TR `2:1200` in the original data.
+- `GSR`: Level of nuisance regression. Default is 3.
+    - `GSR = 0`: `regs = ones(1200, 1)`;
+    - `GSR = 1` (not mentioned above): `regs = [mean_white_matter mean_CSF mean_gray_matter ones(1200, 1)]`;
+    - `GSR = 2`: `regs = [Top5PC_white_matter Top5PC_CSF ones(1200, 1)]`;
+    - `GSR = 3`: `regs = [Top5PC_white_matter Top5PC_CSF mean_gray_matter ones(1200, 1)]`;
+- `QC`: Quality control statistics. A structure with the following fields:
+    - `frames`: `(1, nRuns)` matrix, number of motion-free frames in each run.
+    - `run`: `(1, nRuns)` structure array, with the following fields:
+        - `tmask`: `(1, 1200)` binary vector, whether each frame should be excluded based on movement.
+        - `FD`: `(1, 1200)` vector, the framewise displacement.
+        - `DV`: `(1, 1200)` vector, the DVARS.
+    - `regs`: `(1200, nReg)` matrix, the regressors used for nuisance regression. `nReg` depends on `GSR`.
+
+## Data (WUSTL only)
 
 HCP data on the WUSTL NIL cluster:
 
