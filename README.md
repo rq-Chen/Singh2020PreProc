@@ -12,7 +12,6 @@ This repo contains the preprocessing scripts for HCP rfMRI data in the style of 
     - Motion scrubbing (linearly interpolating (but not extrapolating) high-motion frames):
         - Framewise Displacement (FD): >0.2mm
         - Temporal derivative of variation (DVARS): >1.05*median.
-            - Note: DVARS was calculated using the "minimally preprocessed" data from HCP WITHOUT ICA-FIX!
         - FD and DVARS were filtered for respiratory artifact before use
     - Additional nuisance regression (three versions - the most complete one was used in (Singh et. al., 2020)):
         - (`GSR0`) just remove parcel mean;
@@ -21,6 +20,8 @@ This repo contains the preprocessing scripts for HCP rfMRI data in the style of 
 - Averaging within each parcel accroding to all levels of Schaefer atlas (Schaefer et al., 2018):
 - The first frame was discarded.
 - Extra preprocessing by MINDy functions (not included in this repo).
+
+Also note that although the scripts can be used to preprocessed both "minimally preprocessed" and FIX-ICA versions of data, the DVARS is always calculated using the "minimally preprocessed" (no FIX-ICA) data. This is more conservative because more high-motion frames will be identified and interpolated when using this more noisy version of data.
 
 The entry point is `Singh2020PreProc/MyStartServerDT`. See the comments in that file for details. You need to add that folder to MATLAB path.
 

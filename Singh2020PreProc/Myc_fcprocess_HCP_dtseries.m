@@ -90,6 +90,11 @@ numregs = 25 + 3 * switches.GSR;
 %% CAROLINA not doing FC for all grayordinates
 
 switches
+if switches.FIX
+    suffix = '_hp2000_clean';
+else
+    suffix = '';
+end
 
 %% Do the stuff
 for ll = 1:length(Subjlist) % subjects
@@ -124,11 +129,7 @@ for ll = 1:length(Subjlist) % subjects
     for t = 1:NR % runs 
 
         try    
-            if switches.FIX % passed through ICA-FIX
-                runname = fullfile(sub_dir, 'MNINonLinear', 'Results', tseries{t}, [tseries{t} '_Atlas_MSMAll_hp2000_clean']);
-            else
-                runname = fullfile(sub_dir, 'MNINonLinear', 'Results', tseries{t}, [tseries{t} '_Atlas']);
-            end
+            runname = fullfile(sub_dir, 'MNINonLinear', 'Results', tseries{t}, [tseries{t} '_Atlas' suffix]);
 
             dtseries = fullfile([runname '.dtseries.nii']);
             
@@ -160,33 +161,22 @@ for ll = 1:length(Subjlist) % subjects
             elseif switches.GSR == 1 %(mean WM, CSF, GM timecourses)
                 
                 % GS = mean(raw_cii.data,2);
-                global_regs = zscore(importdata(fullfile(work_dir, sub, 'Results', tseries{t},'WM_CSF_GM_regs.txt')));
+                global_regs = zscore(importdata(fullfile(work_dir, sub, 'Results', tseries{t}, ['WM_CSF_GM_regs' suffix '.txt'])));
                 global_regs_prime = [[0 0 0]; diff(global_regs)];
                 regs = [ global_regs global_regs_prime ones(size(regs,1),1)];
                 % ADD TEMPORAL DERIVATIVES OF REGS
 
             elseif switches.GSR == 2 % compcor
                 
-                if switches.FIX
-                    CompCor_regs = zscore(importdata(fullfile(work_dir, sub, 'Results', tseries{t},'WM_CSF_CompCor_regs_hp200_clean.txt')));
-                else
-                    CompCor_regs = zscore(importdata(fullfile(work_dir, sub, 'Results', tseries{t},'/WM_CSF_CompCor_regs.txt')));
-                end
-                
+                CompCor_regs=zscore(importdata(fullfile(work_dir, sub, 'Results', tseries{t}, ['WM_CSF_CompCor_regs' suffix '.txt'])));        
                 regs = [ CompCor_regs(:,1:10) ones(size(regs,1),1)];
-
                 
             elseif switches.GSR == 3 % compcor and global mean?
-                
-                if switches.FIX
-                    CompCor_regs = zscore(importdata(fullfile(work_dir, sub, 'Results', tseries{t}, 'WM_CSF_CompCor_regs_hp200_clean.txt')));
-                    global_regs = zscore(importdata(fullfile(work_dir, sub, 'Results', tseries{t}, 'WM_CSF_GM_regs_hp200_clean.txt')));
-                else
-                    CompCor_regs = zscore(importdata(fullfile(work_dir, sub, 'Results', tseries{t}, 'WM_CSF_CompCor_regs.txt')));
-                    global_regs = zscore(importdata(fullfile(work_dir, sub, 'Results', tseries{t}, 'WM_CSF_GM_regs.txt')));
-                end
-                
+
+                CompCor_regs=zscore(importdata(fullfile(work_dir, sub, 'Results', tseries{t}, ['WM_CSF_CompCor_regs' suffix '.txt'])));
+                global_regs = zscore(importdata(fullfile(work_dir, sub, 'Results', tseries{t}, ['WM_CSF_GM_regs' suffix '.txt'])));             
                 regs = [ CompCor_regs(:,1:10) global_regs(:,3) ones(size(regs,1),1)];
+
             end % regs
             
             myQC.run(t).regs=regs;

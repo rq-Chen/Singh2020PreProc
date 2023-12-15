@@ -165,7 +165,7 @@ for i = 1:length(Subjlist)
 
     %Get the regressors for all the functioal connectivity
     disp('Running HCPregressorCompCor')
-    getHCPregressorsCompCor_final(Subjlist{i}, in_dir, dtseries_dir, tseries)
+    getHCPregressorsCompCor(Subjlist{i}, in_dir, dtseries_dir, tseries, switches)
 
     disp(['Elapsed time for generating CompCor regressors for subject ' Subjlist{i} ' :'])
     toc(t0)
@@ -173,8 +173,6 @@ for i = 1:length(Subjlist)
     t0 = tic;
     disp('running dtSeries')%run a dense timeseries
     Myc_fcprocess_HCP_dtseries(switches, Subjlist(i), in_dir, dtseries_dir, tseries)
-    %disp('running ptSeries')%run parcellated time series
-    %c_fcprocess_HCP_ptseries(switches, Subjlist, in_dir, dtseries_dir, tseries, Parc)if strcmpi(Atlas(1),'y')
     disp(['Elapsed time for dense timeseries preprocessing for subject ' Subjlist{i} ' :'])
     toc(t0)
     
@@ -193,29 +191,5 @@ for i = 1:length(Subjlist)
     toc(t0)
 end
 
-
-%If you are running the Ptseries choose which parcellation you want to use
-% Parc.dir = '/data/nil-bluearc/ccp-hcp/DMCC_ALL_BACKUPS/ATLASES/HCP-MMP/Glasser_et_al_2016_HCP_MMP1.0_RVVG/HCP_PhaseTwo/Q1-Q6_RelatedValidation210/MNINonLinear/fsaverage_LR32k/Q1-Q6_RelatedValidation210.CorticalAreas_dil_Final_Final_Areas_Group_Colors.32k_fs_LR.dlabel.nii'
-% Parc.NP = 360;%Number of Parcels
-% Parc.name = 'MMP360';%Name of the parcel will be used to store the ptseries
-% Parc.ordered = 0;%is the parcel already ordered Correctly ie. Community then Hemisphere
-% Parc.key = '/data/nil-bluearc/ccp-hcp/DMCC_ALL_BACKUPS/ATLASES/HCP-MMP/Glasser_et_al_2016_HCP_MMP1.0_RVVG/MMP360ParcelsKey.csv'
-
-%ParDir='C:\Users\Matthew\Desktop\HCP\ATLASES\';
-%Parc.dir=strcat(ParDir,'gordon\gordon_parcels\Parcels\Parcels_LR.dlabel.nii');
-
-
-% Parc.dir = fullfile(script_dir, 'utilities', 'Parcels_LR.dlabel.nii');%where is the parcellation located
-% Parc.NP = 333; % number of parcels in Gordon parcellation, change accordingly for other parcellations
-% Parc.name = 'Gordon333'; %what should we call the output of the ptseries .mats
-% Parc.ordered = 0; % is the parcel ordered on a community level
-% %Parc.key=strcat(ParcDir,'gordon\gordon_parcels\Parcels\Gordon333Parcelskey.csv');
-% %Parc.key = '/data/nil-bluearc/ccp-hcp/DMCC_ALL_BACKUPS/ATLASES/gordon/gordon_parcels/Parcels/Gordon333ParcelsKey.csv'%path to the key of how the parcels should be reordered
-% Parc.key = fullfile(script_dir, 'utilities', 'Gordon333SRI_ParcelsKey.csv'); %#ok<STRNU>
-
-%Parc.dir = '/data/nil-bluearc/corbetta/PP_SCRIPTS/Parcellation/GLParcels/reordered/GLParcels_324_reordered.32k.dlabel.nii'
-%Parc.NP = 324
-%Parc.name = 'Gordon324'
-%Parc.ordered = 1
 
 end
