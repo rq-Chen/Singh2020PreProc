@@ -138,20 +138,20 @@ for ll = 1:length(Subjlist) % subjects
             raw_cii = ft_read_cifti_mod(dtseries); % this is Siegel's modified version. Wasn't provided at the beginning
             % dtmean = nanmean(raw_cii.data,2);
             dtstd = nanstd(raw_cii.data, [], 2);
-            % tp = size(raw_cii.data, 2);
+            tp = size(raw_cii.data, 2);
             vox = size(raw_cii.data, 1);
             
             % DEMEAN
             % VARIANCE NORMALIZE
-            raw_cii.data = raw_cii.data./repmat(dtstd,1,size(raw_cii.data,2));
+            raw_cii.data = raw_cii.data./repmat(dtstd,1,tp);
             % DEDRIFT
-            raw_cii.data = detrend(raw_cii.data');
+            raw_cii.data = detrend(raw_cii.data');  % Note the transpose here
             % rawTC = raw_cii.data';
             
             % LOAD 24 PARAM NUISANCE REGRESSION
             % MV = importdata(fullfile(sub_dir, 'MNINonLinear', 'Results', tseries{t},'Movement_Regressors.txt'));
             % MVdt = importdata(fullfile(sub_dir, 'MNINonLinear', 'Results', tseries{t},'Movement_Regressors_dt.txt'));
-            regs = ones(size(raw_cii.data,2),1);
+            regs = ones(tp,1);
             
             %% DONT NEED TO USE 24 REGS IN FIX-ICA            
             if switches.GSR == 0
@@ -163,19 +163,19 @@ for ll = 1:length(Subjlist) % subjects
                 % GS = mean(raw_cii.data,2);
                 global_regs = zscore(importdata(fullfile(work_dir, sub, 'Results', tseries{t}, ['WM_CSF_GM_regs' suffix '.txt'])));
                 global_regs_prime = [[0 0 0]; diff(global_regs)];
-                regs = [ global_regs global_regs_prime ones(size(regs,1),1)];
+                regs = [ global_regs global_regs_prime ones(tp,1)];
                 % ADD TEMPORAL DERIVATIVES OF REGS
 
             elseif switches.GSR == 2 % compcor
                 
                 CompCor_regs=zscore(importdata(fullfile(work_dir, sub, 'Results', tseries{t}, ['WM_CSF_CompCor_regs' suffix '.txt'])));        
-                regs = [ CompCor_regs(:,1:10) ones(size(regs,1),1)];
+                regs = [ CompCor_regs(:,1:10) ones(tp,1)];
                 
             elseif switches.GSR == 3 % compcor and global mean?
 
                 CompCor_regs=zscore(importdata(fullfile(work_dir, sub, 'Results', tseries{t}, ['WM_CSF_CompCor_regs' suffix '.txt'])));
                 global_regs = zscore(importdata(fullfile(work_dir, sub, 'Results', tseries{t}, ['WM_CSF_GM_regs' suffix '.txt'])));             
-                regs = [ CompCor_regs(:,1:10) global_regs(:,3) ones(size(regs,1),1)];
+                regs = [ CompCor_regs(:,1:10) global_regs(:,3) ones(tp,1)];
 
             end % regs
             
