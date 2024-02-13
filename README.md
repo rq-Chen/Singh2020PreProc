@@ -1,5 +1,7 @@
 # Preprocessing Code for MINDy HCP rfMRI Model
 
+Preprocessing pipeline as used in (Singh et. al., 2020) and (Chen et. al., 2023).
+
 Author: Joshua Siegel and Matthew Singh.
 
 Modified and documented by Ruiqi Chen (2023).
@@ -79,8 +81,10 @@ They contain all 1113 subjects with neuroimaging data.
 
 ## References
 
-Singh, M. F., Braver, T. S., Cole, M. W., & Ching, S. (2020). Estimation and validation of individualized dynamic brain models with resting state fMRI. NeuroImage, 221, 117046. https://doi.org/10.1016/j.neuroimage.2020.117046
+Chen, R., Singh, M., Braver, T. S., & Ching, S. (2024). Dynamical models reveal anatomically reliable attractor landscapes embedded in resting state brain networks. bioRxiv. [https://doi.org/10.1101/2024.01.15.575745](https://doi.org/10.1101/2024.01.15.575745)
 
-Siegel, J. S., Mitra, A., Laumann, T. O., Seitzman, B. A., Raichle, M., Corbetta, M., & Snyder, A. Z. (2017). Data Quality Influences Observed Links Between Functional Connectivity and Behavior. Cerebral Cortex, 27(9), 4492–4502. https://doi.org/10.1093/cercor/bhw253
+Singh, M. F., Braver, T. S., Cole, M. W., & Ching, S. (2020). Estimation and validation of individualized dynamic brain models with resting state fMRI. NeuroImage, 221, 117046. [https://doi.org/10.1016/j.neuroimage.2020.117046](https://doi.org/10.1016/j.neuroimage.2020.117046)
 
-Schaefer, A., Kong, R., Gordon, E. M., Laumann, T. O., Zuo, X.-N., Holmes, A. J., Eickhoff, S. B., & Yeo, B. T. T. (2018). Local-Global Parcellation of the Human Cerebral Cortex from Intrinsic Functional Connectivity MRI. Cerebral Cortex, 28(9), 3095–3114. https://doi.org/10.1093/CERCOR/BHX179
+Siegel, J. S., Mitra, A., Laumann, T. O., Seitzman, B. A., Raichle, M., Corbetta, M., & Snyder, A. Z. (2017). Data Quality Influences Observed Links Between Functional Connectivity and Behavior. Cerebral Cortex, 27(9), 4492–4502. [https://doi.org/10.1093/cercor/bhw253](https://doi.org/10.1093/cercor/bhw253)
+
+Schaefer, A., Kong, R., Gordon, E. M., Laumann, T. O., Zuo, X.-N., Holmes, A. J., Eickhoff, S. B., & Yeo, B. T. T. (2018). Local-Global Parcellation of the Human Cerebral Cortex from Intrinsic Functional Connectivity MRI. Cerebral Cortex, 28(9), 3095–3114. [https://doi.org/10.1093/CERCOR/BHX179](https://doi.org/10.1093/CERCOR/BHX179)
