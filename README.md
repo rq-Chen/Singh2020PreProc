@@ -1,21 +1,21 @@
 # Preprocessing Code for MINDy HCP rfMRI Model
 
-Preprocessing pipeline as used in (Singh et. al., 2020) and (Chen et. al., 2023).
+Preprocessing pipeline as used in (Singh et al., 2020) and (Chen et al., 2024).
 
 Author: Joshua Siegel and Matthew Singh.
 
-Modified and documented by Ruiqi Chen (2023).
+Modified and documented by Ruiqi Chen.
 
-This repo contains the preprocessing scripts for HCP rfMRI data in the style of (Singh et. al., 2020). Here is the pipeline (for details see (Singh et al., 2020)):
+This repo contains the preprocessing scripts for HCP rfMRI data in the style of (Singh et al., 2020). Here is the pipeline (for details see (Singh et al., 2020)):
 
 - HCP protocol: FIX-cleaned data (with FIX-ICA and motion correction)
-- (Siegel et. al., 2017) protocol:
+- (Siegel et al., 2017) protocol:
     - Detrending
     - Motion scrubbing (linearly interpolating (but not extrapolating) high-motion frames):
         - Framewise Displacement (FD): >0.2mm
         - Temporal derivative of variation (DVARS): >1.05*median.
         - FD and DVARS were filtered for respiratory artifact before use
-    - Additional nuisance regression (three versions - the most complete one was used in (Singh et. al., 2020)):
+    - Additional nuisance regression (three versions - the most complete one was used in (Singh et al., 2020)):
         - (`GSR0`) just remove parcel mean;
         - (`GSR2`) (on top of above) CompCor: the top five PCs of white matter and cerebrospinal fluid signals;
         - (`GSR3`) (on top of above) Global signal regression (GSR): mean signal from gray matter.
